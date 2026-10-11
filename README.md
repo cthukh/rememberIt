@@ -5,3 +5,8 @@ Sistema integral de gestión de residentes, control de tratamientos medicamentos
 ## Django version 6.1.2
 
 para que todos tenga la misma version de Django, instalen los requerimientos profavorsito.
+
+``` sh
+pip install -r requirements.txt
+```
+
