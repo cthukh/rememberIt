@@ -1,16 +1,21 @@
 -- Usuario de prueba
 
+-------------------------------------
+
+INSERT INTO rol (id, nombre) VALUES (1, 'enfermero');
+
+commit;
+
+-----------------
 
 -- CREACIÓN DE USUARIO Y ROL
 
 INSERT INTO funcionario(rut,nombre,apellidos,direccion,telefono,correo,password,rol_id) 
 VALUES ('12345678-9', 'Benjamín', 'Barra Díaz', 'Los Tilos 188', '+56933612014','benjamin@gmail.com','1234', 1);
 
+commit;
+
 -----------
-
-INSERT INTO rol (id, nombre) VALUES (1, 'enfermero');
-
------------------
 
 SELECT * FROM funcionario;
 

@@ -99,5 +99,5 @@ CREATE TABLE tratamiento (
         )
 );
 
-
+commit; 
 ------------------FIN----------------------
