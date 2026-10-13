@@ -1,0 +1,103 @@
+-- Script Creacion de tablas
+
+------------------INICIO----------------------
+
+CREATE TABLE rol (
+    id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(15) NOT NULL
+);
+
+
+CREATE TABLE funcionario (
+    rut VARCHAR2(15) PRIMARY KEY,
+    nombre VARCHAR2(60) NOT NULL,
+    apellidos VARCHAR2(100) NOT NULL,
+    direccion VARCHAR2(100) NOT NULL,
+    telefono VARCHAR2(15) NOT NULL,
+    correo VARCHAR2(254) NOT NULL,
+    password VARCHAR2(128) NOT NULL,
+    rol_id NUMBER NOT NULL,
+
+    CONSTRAINT fk_funcionario_rol FOREIGN KEY (rol_id) REFERENCES rol(id)
+);
+
+
+CREATE TABLE residente (
+    rut VARCHAR2(15) PRIMARY KEY,
+    nombre VARCHAR2(60) NOT NULL,
+    apellidos VARCHAR2(100) NOT NULL,
+    edad NUMBER(3) NOT NULL,
+    alergias VARCHAR2(255),
+    telefono_emergencias VARCHAR2(15),
+    funcionario_rut VARCHAR2(15) NOT NULL,
+
+    CONSTRAINT fk_residente_funcionario FOREIGN KEY (funcionario_rut) REFERENCES funcionario(rut),
+
+    CONSTRAINT ck_residente_edad
+        CHECK (edad >= 0)
+);
+
+
+CREATE TABLE incidente (
+    id NUMBER PRIMARY KEY,
+    tipo_incidente VARCHAR2(25) NOT NULL,
+    descripcion CLOB NOT NULL,
+    fecha_hora DATE DEFAULT SYSDATE NOT NULL,
+    gravedad VARCHAR2(20) NOT NULL,
+    acciones_tomadas VARCHAR2(255),
+    notificar_familiar NUMBER(1) DEFAULT 0 NOT NULL,
+    residente_rut VARCHAR2(15) NOT NULL,
+
+    CONSTRAINT fk_incidente_residente FOREIGN KEY (residente_rut) REFERENCES residente(rut),
+
+    CONSTRAINT ck_incidente_notificar
+        CHECK (notificar_familiar IN (0, 1))
+);
+
+
+CREATE TABLE recordatorio (
+    id NUMBER PRIMARY KEY,
+    nombre VARCHAR2(25) NOT NULL,
+    descripcion CLOB NOT NULL,
+    cumplido NUMBER(1) DEFAULT 0 NOT NULL,
+    residente_rut VARCHAR2(15) NOT NULL,
+
+    CONSTRAINT fk_recordatorio_residente FOREIGN KEY (residente_rut) REFERENCES residente(rut),
+
+    CONSTRAINT ck_recordatorio_cumplido
+        CHECK (cumplido IN (0, 1))
+);
+
+
+CREATE TABLE tratamiento (
+    id NUMBER PRIMARY KEY,
+    nombre_medicamento VARCHAR2(50) NOT NULL,
+    razon CLOB NOT NULL,
+    fecha_inicio DATE NOT NULL,
+    fecha_termino DATE,
+    dia_hora TIMESTAMP NOT NULL,
+    hora_tratamiento VARCHAR2(8),
+    tiempo_tratamiento VARCHAR2(50),
+    cumplido NUMBER(1) DEFAULT 0 NOT NULL,
+    indefinido NUMBER(1) DEFAULT 0 NOT NULL,
+    residente_rut VARCHAR2(15) NOT NULL,
+
+    CONSTRAINT fk_tratamiento_residente
+        FOREIGN KEY (residente_rut)
+        REFERENCES residente(rut),
+
+    CONSTRAINT ck_tratamiento_cumplido
+        CHECK (cumplido IN (0, 1)),
+
+    CONSTRAINT ck_tratamiento_indefinido
+        CHECK (indefinido IN (0, 1)),
+
+    CONSTRAINT ck_tratamiento_fechas
+        CHECK (
+            fecha_termino IS NULL
+            OR fecha_termino >= fecha_inicio
+        )
+);
+
+
+------------------FIN----------------------
