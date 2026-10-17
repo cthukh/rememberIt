@@ -9,4 +9,4 @@ class RolAdmin(admin.ModelAdmin):
     
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
-    list_display = ('rut','primer_nombre','segundo_nombre','apellido_paterno','apellido_materno','direccion','telefono','correo','rol','fecha_creacion','objects')
+    list_display = ('rut', 'first_name', 'last_name', 'email', 'phone_number', 'rol', 'date_joined')
