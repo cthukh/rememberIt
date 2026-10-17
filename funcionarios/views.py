@@ -2,20 +2,23 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import login
 
-from .forms import CrearUsuarioForm
+from .forms import CrearFuncionarioForm
 # Create your views here.
 
 
 def inicio(request):
+    print("xd",str(request.user.is_authenticated))
     if not request.user.is_authenticated:
         return redirect("funcionario:registro")
     return render(request,"inicio.html")
 
 
+def iniciarSesion(request):
+    pass
 
 def registro(request):
     if request.method == 'POST':
-        form = CrearUsuarioForm(request.POST)
+        form = CrearFuncionarioForm(request.POST)
         if form.is_valid():
             usuario =  form.save()
             usuario.save()
@@ -25,5 +28,5 @@ def registro(request):
         else:
             messages.error(request, "Por favor corrige los errores.")
     else:
-        form = CrearUsuarioForm()
+        form = CrearFuncionarioForm()
     return render(request,"registro.html",{"form":form})
