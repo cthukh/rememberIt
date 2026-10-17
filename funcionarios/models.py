@@ -31,7 +31,7 @@ class Funcionario(AbstractUser):
     username = None  # el login es por RUT
 
     # required fields
-    rut = models.CharField(max_length=20, unique=True, validators=[validar_rut])
+    rut = models.CharField(max_length=12, unique=True, validators=[validar_rut])
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60)
     email = models.EmailField(max_length=255, unique=True)
