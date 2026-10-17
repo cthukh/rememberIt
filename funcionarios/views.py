@@ -1,7 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 
 # Create your views here.
 
 
-def registroFuncionario(self,request):
-    return render(request,"registro.html")
+def inicio(request):
+    if not request.user.is_authenticated:
+        return redirect("funcionario:registro")
+    return render(request,"inicio.html")
+
+
+
+def registro(request):
+    return render(request,"iniciarses.html")
