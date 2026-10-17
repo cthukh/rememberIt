@@ -1,10 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+from .managers import FuncionarioManager
+from .validators import normalizar_rut, validar_rut
+
 
 class Rol(models.Model):
     # Se guarda la clave en la db ('dir') <--> Se muestra el texto en el frontend ('Director/a')
     ROLES = {
         'dir': 'Director/a',
-        'adm': 'Administrativo', 
+        'adm': 'Administrativo',
         'enf': 'Enfermero/a',
         'tec': 'Técnico',
     }
@@ -13,31 +18,42 @@ class Rol(models.Model):
     nombre = models.CharField(max_length=10, unique=True, choices=ROLES)
 
     def __str__(self):
-        # get_nombre_display() es un método mágico que Django crea automáticamente 
-        # para mostrar el texto de la derecha ('Director/a') en lugar de la clave ('dir').
+        # get_nombre_display() muestra el texto ('Director/a') en lugar de la clave ('dir').
         return self.get_nombre_display()
 
 
-class Funcionario(models.Model):
-    rut              = models.CharField(max_length=20, primary_key=True)
-    
-    primer_nombre    = models.CharField(max_length=60)
-    segundo_nombre   = models.CharField(max_length=60, blank=True, null=True)
-    apellido_paterno = models.CharField(max_length=60)
-    apellido_materno = models.CharField(max_length=60, blank=True, null=True)
-    
-    direccion        = models.TextField()
-    telefono         = models.CharField(max_length=20, unique=True)
-    correo           = models.EmailField(max_length=255, unique=True)
-    
-    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='rol_id', null=True, blank=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=True)
+class Funcionario(AbstractUser):
+    """
+    AbstractUser trae por defecto:
+    password, email, first_name, last_name, is_staff, is_superuser,
+    is_active, date_joined (username se elimina abajo).
+    """
+    username = None  # el login es por RUT
+
+    # required fields
+    rut = models.CharField(max_length=20, unique=True, validators=[validar_rut])
+    first_name = models.CharField(max_length=60)
+    last_name = models.CharField(max_length=60)
+    email = models.EmailField(max_length=255, unique=True)
+
+    # fields para añadir después desde perfil
+    phone_number = models.CharField(max_length=30, unique=True, null=True, blank=True)
+    rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='rol_id',
+                            null=True, blank=True)
+
+    # configuraciones extra
+    USERNAME_FIELD = "rut"  # identificador (user login)
+    REQUIRED_FIELDS = ["first_name", "last_name", "email"]
+
+    objects = FuncionarioManager()
+
+    def save(self, *args, **kwargs):
+        self.rut = normalizar_rut(self.rut)
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"{self.primer_nombre} {self.apellido_paterno} - RUT: {self.rut}"
+        return f"{self.first_name} {self.last_name} - RUT: {self.rut}"
 
     @property
     def full_name(self):
-        """Retorna el nombre completo considerando opcionales."""
-        segundo = f" {self.segundo_nombre}" if self.segundo_nombre else ""
-        materno = f" {self.apellido_materno}" if self.apellido_materno else ""
-        return f"{self.primer_nombre}{segundo} {self.apellido_paterno}{materno}"
+        return f"{self.first_name} {self.last_name}"
