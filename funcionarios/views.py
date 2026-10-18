@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, PerfilFuncionarioForm
+from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, ActuaFuncionarioForm
 
 # Create your views here.
 
@@ -56,15 +56,15 @@ def registro(request):
 @login_required
 def perfil(request):
     datosUsuario = request.user
-    form = PerfilFuncionarioForm(instance=datosUsuario)
+    form = ActuaFuncionarioForm(instance=datosUsuario)
     return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form})
 
 @login_required
-def agregarNumero(request):
+def modificarFuncionario(request):
     if request.method != "POST":
         return redirect("funcionario:perfil")
 
-    form = PerfilFuncionarioForm(request.POST, instance=request.user)
+    form = ActuaFuncionarioForm(request.POST, instance=request.user)
     if form.is_valid():
         form.save()
         messages.success(request, "Tus datos de perfil se actualizaron correctamente.")

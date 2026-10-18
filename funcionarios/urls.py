@@ -10,6 +10,6 @@ urlpatterns = [
     path('iniciarSesion/', views.iniciarSesion, name='iniciar_sesion'),
     path('cerrarSesion/', views.cerrarSesion, name='cerrar_sesion'),
     path('perfil/',views.perfil,name="perfil"),
-    path('agregarNumero/',views.agregarNumero,name="agregarNumero")
+    path('agregarNumero/',views.modificarFuncionario,name="agregarNumero")
 
 ]
