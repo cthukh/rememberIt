@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .forms import CrearFuncionarioForm, IniciarSesionFuncionario
+from django.contrib.auth.decorators import login_required
+from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, PerfilFuncionarioForm
 
 # Create your views here.
 
@@ -11,7 +12,9 @@ def base(request):
 def inicio(request):
     if not request.user.is_authenticated:
         return redirect("funcionario:iniciar_sesion")
-    return render(request,"inicio.html")
+    datosUsuario = request.user 
+
+    return render(request,"inicio.html",{"datUsu":datosUsuario})
 
 
 def iniciarSesion(request):
@@ -49,3 +52,22 @@ def registro(request):
     else:
         form = CrearFuncionarioForm()
     return render(request,"registro.html",{"form":form})
+
+@login_required
+def perfil(request):
+    datosUsuario = request.user
+    form = PerfilFuncionarioForm(instance=datosUsuario)
+    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form})
+
+@login_required
+def agregarNumero(request):
+    if request.method != "POST":
+        return redirect("funcionario:perfil")
+
+    form = PerfilFuncionarioForm(request.POST, instance=request.user)
+    if form.is_valid():
+        form.save()
+        messages.success(request, "Tus datos de perfil se actualizaron correctamente.")
+        return redirect("funcionario:perfil")
+
+    return render(request, "perfil.html", {"datUsu": request.user, "form": form})

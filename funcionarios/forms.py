@@ -29,3 +29,23 @@ class IniciarSesionFuncionario(forms.Form):
         super().__init__(*args, **kwargs)
         for field in self.fields.values():
             field.widget.attrs["class"] = "form-control"
+
+
+class PerfilFuncionarioForm(forms.ModelForm):
+    class Meta:
+        model = Funcionario
+        fields = ("phone_number", "rol")
+        labels = {
+            "phone_number": "Teléfono",
+            "rol": "Rol",
+        }
+        widgets = {
+            "phone_number": forms.TextInput(attrs={
+                "type": "tel",
+                "inputmode": "tel",
+                "autocomplete": "tel",
+                "class": "form-control",
+                "placeholder": "Ingresa tu número de teléfono",
+            }),
+            "rol": forms.Select(attrs={"class": "form-select"}),
+        }

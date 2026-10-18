@@ -32,32 +32,32 @@
                 </div>
             </section>
         </div>
-
         <div class="col-lg-5">
             <aside class="account-panel h-100" aria-labelledby="account-title">
                 <div class="account-panel-heading">
-                    <span class="account-avatar" aria-hidden="true">{{ request.user.first_name|first|upper|default:"R" }}</span>
+                    <span class="account-avatar" aria-hidden="true">{{datUsu.first_name|first|upper|default:"R" }}</span>
                     <div>
-                        <p class="section-label">Tu perfil</p>
+                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionario:perfil' %}">Tu perfil</a> </p>
+                    
                         <h2 id="account-title">Datos de la cuenta</h2>
                     </div>
                 </div>
                 <dl class="account-details">
                     <div>
                         <dt>Nombre</dt>
-                        <dd>{{ request.user.full_name|default:request.user.rut }}</dd>
+                        <dd>{{ datUsu.full_name|default:request.user.rut }}</dd>
                     </div>
                     <div>
                         <dt>RUT</dt>
-                        <dd>{{ request.user.rut }}</dd>
+                        <dd>{{ datUsu.rut }}</dd>
                     </div>
                     <div>
                         <dt>Correo</dt>
-                        <dd>{{ request.user.email|default:"Sin correo registrado" }}</dd>
+                        <dd>{{ datUsu.email|default:"Sin correo registrado" }}</dd>
                     </div>
                     <div>
                         <dt>Rol</dt>
-                        <dd>{{ request.user.rol|default:"Sin asignar" }}</dd>
+                        <dd>{{ datUsu.rol|default:"Sin asignar" }}</dd>
                     </div>
                 </dl>
             </aside>

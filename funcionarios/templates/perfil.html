@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mi perfil | RememberIt{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'inicio.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionario:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+{% block content %}
+    <section class="welcome-heading" aria-labelledby="profile-title">
+        <p class="eyebrow">Mi cuenta</p>
+        <h1 id="profile-title">Perfil de funcionario</h1>
+        <p>Información personal y datos de contacto.</p>
+    </section>
+
+    <div class="row g-4 dashboard-grid">
+        <div class="col-lg-7">
+            <section class="welcome-panel h-100" aria-labelledby="personal-title">
+                <div class="panel-symbol" aria-hidden="true">P</div>
+                <p class="section-label">Información personal</p>
+                <h2 id="personal-title">Datos personales</h2>
+                <dl class="account-details">
+                    <div>
+                        <dd> {{ datUsu.first_name }} </dd>
+                    </div>
+                    <div>
+                        <dd> {{ datUsu.last_name }} </dd>
+                    </div>
+                    <div>
+                        
+                        <dd> {{ datUsu.rut }} </dd>
+                    </div>
+                </dl>
+            </section>
+        </div>
+
+        <div class="col-lg-5">
+            <aside class="account-panel h-100" aria-labelledby="contact-title">
+                <div class="account-panel-heading">
+                    <span class="account-avatar" aria-hidden="true">P</span>
+                    <div>
+                        <p class="section-label">Cuenta</p>
+                        <h2 id="contact-title">Contacto y rol</h2>
+                    </div>
+                </div>
+                <dl class="account-details">
+                    <div>
+                        <dt>Correo electrónico</dt>
+                        <dd> {{ datUsu.email }} </dd>
+                    </div>
+                </dl>
+                <form class="profile-form" method="post" action="{% url 'funcionario:agregarNumero' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.phone_number.id_for_label }}">{{ form.phone_number.label }}</label>
+                        {{ form.phone_number }}
+                        {% for error in form.phone_number.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.rol.id_for_label }}">{{ form.rol.label }}</label>
+                        {{ form.rol }}
+                        {% for error in form.rol.errors %}
+                            <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <button class="btn btn-success" type="submit">Guardar cambios</button>
+                </form>
+            </aside>
+        </div>
+    </div>
+{% endblock %}
