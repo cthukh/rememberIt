@@ -119,6 +119,17 @@ h1 {
 	background: var(--green-dark);
 }
 
+.auth-switch {
+	margin: 22px 0 0;
+	color: var(--muted);
+	text-align: center;
+}
+
+.auth-switch a {
+	color: var(--green-dark);
+	font-weight: 600;
+}
+
 @keyframes enter {
 	from {
 		opacity: 0;

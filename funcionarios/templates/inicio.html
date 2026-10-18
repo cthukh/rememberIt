@@ -1,11 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    xd
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Inicio | RememberIt{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'inicio.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block nav_links %}
+    <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
+    <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+{% block content %}
+    <section class="welcome-heading" aria-labelledby="welcome-title">
+        <p class="eyebrow">Panel del hogar</p>
+        <h1 id="welcome-title">Hola, {{ request.user.first_name|default:request.user.rut }}</h1>
+        <p>Qué bueno tenerte aquí. Este es tu espacio de trabajo en RememberIt.</p>
+    </section>
+
+    <div class="row g-4 dashboard-grid">
+        <div class="col-lg-7">
+            <section class="welcome-panel h-100" aria-labelledby="reminders-title">
+                <div class="panel-symbol" aria-hidden="true">R</div>
+                <p class="section-label">Organización diaria</p>
+                <h2 id="reminders-title">Recordatorios del hogar</h2>
+                <p class="panel-copy">Tus recordatorios aparecerán aquí para que puedas tener a mano las actividades importantes del hogar.</p>
+                <div class="empty-state" role="status">
+                    <span class="empty-state-mark" aria-hidden="true"></span>
+                    <span>Aún no hay recordatorios registrados.</span>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-5">
+            <aside class="account-panel h-100" aria-labelledby="account-title">
+                <div class="account-panel-heading">
+                    <span class="account-avatar" aria-hidden="true">{{ request.user.first_name|first|upper|default:"R" }}</span>
+                    <div>
+                        <p class="section-label">Tu perfil</p>
+                        <h2 id="account-title">Datos de la cuenta</h2>
+                    </div>
+                </div>
+                <dl class="account-details">
+                    <div>
+                        <dt>Nombre</dt>
+                        <dd>{{ request.user.full_name|default:request.user.rut }}</dd>
+                    </div>
+                    <div>
+                        <dt>RUT</dt>
+                        <dd>{{ request.user.rut }}</dd>
+                    </div>
+                    <div>
+                        <dt>Correo</dt>
+                        <dd>{{ request.user.email|default:"Sin correo registrado" }}</dd>
+                    </div>
+                    <div>
+                        <dt>Rol</dt>
+                        <dd>{{ request.user.rol|default:"Sin asignar" }}</dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+    </div>
+{% endblock %}

@@ -1,11 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión | RememberIt{% endblock %}
+
+{% block content %}
+    <section class="login-panel" aria-labelledby="login-title">
+        <p class="eyebrow">RememberIt · Gestión del hogar</p>
+        <h1 id="login-title">Iniciar sesión</h1>
+        <p class="login-intro">Ingresa con tu RUT y contraseña para continuar.</p>
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-primary w-100" type="submit">Ingresar</button>
+        </form>
+        <p class="register-prompt">¿Aún no tienes cuenta? <a href="{% url 'funcionario:registro' %}">Regístrate</a></p>
+    </section>
+{% endblock %}

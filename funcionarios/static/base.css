@@ -1,0 +1,166 @@
+:root {
+	color-scheme: light;
+	--ink: #203630;
+	--muted: #62736d;
+	--green: #28745f;
+	--green-dark: #205d4d;
+	--line: #dce7e2;
+	--paper: #ffffff;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	display: flex;
+	min-height: 100vh;
+	flex-direction: column;
+	margin: 0;
+	color: var(--ink);
+	background: linear-gradient(135deg, #edf5f0 0%, #f7f8f3 55%, #e9f1ee 100%);
+	font-family: "Segoe UI", sans-serif;
+}
+
+.skip-link {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	z-index: 10;
+	padding: 8px 12px;
+	transform: translateY(-150%);
+	border-radius: 4px;
+	color: #fff;
+	background: var(--green-dark);
+}
+
+.skip-link:focus {
+	transform: translateY(0);
+}
+
+.app-header {
+	border-bottom: 1px solid rgba(32, 93, 77, 0.12);
+	background: rgba(255, 255, 255, 0.9);
+}
+
+.navbar {
+	min-height: 72px;
+}
+
+.navbar-brand {
+	color: var(--ink);
+	font-size: 1.1rem;
+	font-weight: 700;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+	color: var(--green-dark);
+}
+
+.brand-mark {
+	display: grid;
+	width: 38px;
+	height: 38px;
+	place-items: center;
+	border-radius: 8px;
+	color: #fff;
+	background: var(--green);
+	font-size: 1.1rem;
+}
+
+.app-main {
+	flex: 1;
+	padding-top: 32px;
+	padding-bottom: 40px;
+}
+
+.app-footer {
+	padding: 18px 0;
+	border-top: 1px solid var(--line);
+	color: var(--muted);
+	background: rgba(255, 255, 255, 0.72);
+	font-size: 0.88rem;
+}
+
+.app-footer span {
+	padding: 0 4px;
+	color: var(--green);
+}
+
+.login-panel {
+	width: min(100%, 480px);
+	margin: 20px auto;
+	padding: clamp(24px, 6vw, 38px);
+	border: 1px solid rgba(32, 93, 77, 0.12);
+	border-radius: 8px;
+	background: var(--paper);
+	box-shadow: 0 14px 38px rgba(32, 54, 48, 0.08);
+}
+
+.login-panel h1 {
+	margin: 0;
+	font-size: 1.8rem;
+	font-weight: 700;
+}
+
+.login-intro {
+	margin: 9px 0 24px;
+	color: var(--muted);
+}
+
+.login-form p {
+	margin-bottom: 16px;
+}
+
+.login-form label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.login-form .form-control {
+	min-height: 44px;
+	border-color: var(--line);
+}
+
+.login-form .form-control:focus {
+	border-color: var(--green);
+	box-shadow: 0 0 0 0.2rem rgba(40, 116, 95, 0.16);
+}
+
+.login-form .btn-primary {
+	min-height: 46px;
+	margin-top: 8px;
+	border-color: var(--green);
+	background: var(--green);
+	font-weight: 600;
+}
+
+.login-form .btn-primary:hover,
+.login-form .btn-primary:focus-visible {
+	border-color: var(--green-dark);
+	background: var(--green-dark);
+}
+
+.register-prompt {
+	margin: 22px 0 0;
+	color: var(--muted);
+	text-align: center;
+}
+
+.register-prompt a {
+	color: var(--green-dark);
+	font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+	.navbar {
+		min-height: 64px;
+	}
+
+	.app-main {
+		padding-top: 24px;
+	}
+}
