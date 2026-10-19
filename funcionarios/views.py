@@ -9,7 +9,9 @@ from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, ActuaFunciona
 def base(request):
     return render(request,"base.html")
 
+@login_required
 def inicio(request):
+    print(request.user.username)
     if not request.user.is_authenticated:
         return redirect("funcionario:iniciar_sesion")
     datosUsuario = request.user 
@@ -34,10 +36,11 @@ def iniciarSesion(request):
         form = IniciarSesionFuncionario()
     return render(request, "iniciarses.html", {"form": form})
 
-
+@login_required
 def cerrarSesion(request):
     logout(request)
     return redirect("funcionario:iniciar_sesion")
+
 
 def registro(request):
     if request.method == 'POST':
@@ -54,10 +57,11 @@ def registro(request):
     return render(request,"registro.html",{"form":form})
 
 @login_required
-def perfil(request):
+def perfil(request,username):
+    username = request.user.username
     datosUsuario = request.user
     form = ActuaFuncionarioForm(instance=datosUsuario)
-    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form})
+    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"username":username})
 
 @login_required
 def modificarFuncionario(request):

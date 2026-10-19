@@ -12,7 +12,7 @@ class CrearFuncionarioForm(UserCreationForm):
 
     class Meta:
         model= Funcionario
-        fields =('rut','first_name','last_name','email')
+        fields =('rut','first_name','last_name','email','username')
 
 
 class IniciarSesionFuncionario(forms.Form):

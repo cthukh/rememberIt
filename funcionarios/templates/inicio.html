@@ -37,7 +37,7 @@
                 <div class="account-panel-heading">
                     <span class="account-avatar" aria-hidden="true">{{datUsu.first_name|first|upper|default:"R" }}</span>
                     <div>
-                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionario:perfil' %}">Tu perfil</a> </p>
+                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionario:perfil' username=datUsu.username %}">Tu perfil</a> </p>
                     
                         <h2 id="account-title">Datos de la cuenta</h2>
                     </div>
