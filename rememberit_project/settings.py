@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
+from decouple import config
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -84,12 +86,12 @@ WSGI_APPLICATION = 'rememberit_project.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": 'django.db.backends.oracle',
-        "NAME": "xe",
-        "USER": "C##GERARD",
-        "PASSWORD": "Remember_It2026",
-        "HOST": "127.0.0.1",
-        "PORT": "1521",
+        "ENGINE": config("DB_ENGINE", default="django.db.backends.oracle"),
+        "NAME": config("DB_NAME", default="xe"),
+        "USER": config("DB_USER"),
+        "PASSWORD": config("DB_PASSWORD"),
+        "HOST": config("DB_HOST", default="127.0.0.1"),
+        "PORT": config("DB_PORT", default="1521"),
     }
 }
 
