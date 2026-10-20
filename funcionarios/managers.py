@@ -1,6 +1,6 @@
 from django.contrib.auth.models import BaseUserManager
 
-from .validators import normalizar_rut, validar_rut
+from core.validators import normalizar_rut, validar_rut
 
 
 class FuncionarioManager(BaseUserManager):

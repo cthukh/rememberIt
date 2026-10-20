@@ -3,7 +3,7 @@
 import django.db.models.deletion
 import django.utils.timezone
 import funcionarios.managers
-import funcionarios.validators
+import core.validators
 from django.db import migrations, models
 
 
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
                 ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
-                ('rut', models.CharField(max_length=20, unique=True, validators=[funcionarios.validators.validar_rut])),
+                ('rut', models.CharField(max_length=20, unique=True, validators=[core.validators.validar_rut])),
                 ('first_name', models.CharField(max_length=60)),
                 ('last_name', models.CharField(max_length=60)),
                 ('email', models.EmailField(max_length=255, unique=True)),

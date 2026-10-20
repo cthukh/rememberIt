@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from .managers import FuncionarioManager
-from .validators import normalizar_rut, validar_rut
+from core.validators import normalizar_rut, validar_rut
 
 
 class Rol(models.Model):
