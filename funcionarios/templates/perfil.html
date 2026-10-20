@@ -12,6 +12,11 @@
     <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
+{% block link_logo %}
+    {% url 'funcionario:funcionario' %}
+{% endblock %}
+
+
 {% block content %}
     <section class="welcome-heading" aria-labelledby="profile-title">
         <p class="eyebrow">Mi cuenta</p>
