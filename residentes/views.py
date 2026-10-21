@@ -1,6 +1,12 @@
 from django.shortcuts import render
 
-# Create your views here.
-def inicio_residentes(request):
 
-    return (render, inicio_residentes.html)
+def inicio_residentes(request):
+    return render(request, 'inicio_residentes.html')
+
+
+def crear_residente():
+    return
+
+def update_residente(request):
+    return render(request, 'updateresidente.html')
