@@ -87,9 +87,9 @@ WSGI_APPLICATION = 'rememberit_project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": config("DB_ENGINE", default="django.db.backends.oracle"),
-        "NAME": config("DB_NAME", default="xe"),
-        "USER": config("REMEMBER_IT"),
-        "PASSWORD": config("Remember_It2026"),
+        "NAME": config("DB_NAME", default="revb"),
+        "USER": config("DB_USER", default="revb"),
+        "PASSWORD": config("DB_PASSWORD", default="Remember_It2026"),
         "HOST": config("DB_HOST", default="localhost"),
         "PORT": config("DB_PORT", default="1521"),
     }

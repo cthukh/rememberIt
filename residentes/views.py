@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from .forms import ResidenteForm
 # Create your views here.
-<<<<<<< HEAD
 
 from django.shortcuts import render, redirect
-from .models import ResidenteForm
+from .forms import ResidenteForm
 
 def registrar_residente(request):
     if request.method == 'POST':
@@ -15,8 +14,3 @@ def registrar_residente(request):
     else:
         form = ResidenteForm()
     return render(request, 'funcionarios/templates/registro.html', {'form': form})
-=======
-def inicio_residentes(request):
-
-    return (render, inicio_residentes.html)
->>>>>>> main
