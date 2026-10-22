@@ -23,3 +23,5 @@ class Residente(models.Model):
 
     def __str__(self):
         return f"{self.primer_nombre} {self.apellido_paterno}"
+    
+    
