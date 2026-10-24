@@ -14,6 +14,7 @@ from decouple import config
 
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -55,6 +56,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+# Cierre por inactividad: 15 minutos
+SESSION_COOKIE_AGE = 1 * 60          # la sesión dura 15 min...
+SESSION_SAVE_EVERY_REQUEST = True     # ...y se renueva con cada petición
+
+# Hacia dónde redirige @login_required cuando la sesión expiró
+LOGIN_URL = "funcionario:iniciar_sesion"
 
 ROOT_URLCONF = 'rememberit_project.urls'
 
