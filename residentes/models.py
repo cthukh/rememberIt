@@ -1,9 +1,11 @@
 from django.db import models
 from funcionarios.models import Funcionario
 from familiares.models import Familiar
+import uuid
 
 class Residente(models.Model):
     rut = models.CharField(max_length=15, primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     primer_nombre = models.CharField(max_length=30)
     segundo_nombre = models.CharField(max_length=30, blank=True, null=True)
     apellido_paterno = models.CharField(max_length=50)
@@ -14,7 +16,7 @@ class Residente(models.Model):
     telefono_emergencias = models.CharField(max_length=15, blank=True, null=True)
     
     # Relación con el funcionario que lo registró/supervisa
-    funcionario = models.ForeignKey(Funcionario, on_delete=models.PROTECT, db_column='funcionario_rut')
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.PROTECT, null=True, blank=True, db_column='funcionario_rut')
     
     # Relación con el familiar a cargo (puede ser nulo si aún no está asignado)
     familiar = models.ForeignKey(Familiar, on_delete=models.SET_NULL, null=True, blank=True, db_column='familiar_rut')
@@ -23,3 +25,5 @@ class Residente(models.Model):
 
     def __str__(self):
         return f"{self.primer_nombre} {self.apellido_paterno}"
+    
+    
