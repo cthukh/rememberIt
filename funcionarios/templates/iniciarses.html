@@ -6,12 +6,13 @@
     <section class="login-panel" aria-labelledby="login-title">
         <p class="eyebrow">RememberIt · Gestión del hogar</p>
         <h1 id="login-title">Iniciar sesión</h1>
-        <p class="login-intro">Ingresa con tu RUT y contraseña para continuar.</p>
+        <p class="login-intro">Ingresa con tu correo electrónico o RUT y contraseña para continuar.</p>
         <form method="post" class="login-form">
             {% csrf_token %}
             {{ form.as_p }}
             <button class="btn btn-primary w-100" type="submit">Ingresar</button>
         </form>
+        <p class="register-prompt"><a href="{% url 'funcionario:password_reset' %}">¿Olvidaste tu contraseña?</a></p>
         <p class="register-prompt">¿Aún no tienes cuenta? <a href="{% url 'funcionario:registro' %}">Regístrate</a></p>
     </section>
 {% endblock %}

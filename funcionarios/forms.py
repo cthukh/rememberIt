@@ -16,13 +16,13 @@ class CrearFuncionarioForm(UserCreationForm):
 
 
 class IniciarSesionFuncionario(forms.Form):
-    rut = forms.CharField(
-        label="RUT",
+    identificador = forms.CharField(
+        label="Correo electrónico o RUT",
         widget=forms.TextInput(attrs={"autocomplete": "username"}),
     )
     password = forms.CharField(
         label="Contraseña",
-        widget=forms.PasswordInput(attrs={"autocamplete": "current-password"}),
+        widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
     )
 
     def __init__(self, *args, **kwargs):

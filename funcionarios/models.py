@@ -51,8 +51,9 @@ class Funcionario(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - RUT: {self.rut}"
+        return f"{self.first_name} {self.last_name} - RUT: {self.rut} "
 
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
