@@ -50,7 +50,7 @@ def iniciarSesion(request):
 @login_required
 def cerrarSesion(request):
     logout(request)
-    return redirect("funcionario:iniciar_sesion")
+    return redirect("funcionarios:iniciar_sesion")
 
 
 def registro(request):
