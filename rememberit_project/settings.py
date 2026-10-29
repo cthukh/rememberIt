@@ -101,6 +101,15 @@ DATABASES = {
         "PASSWORD":"Remember_It2026" ,#config("DB_PASSWORD"),
         "HOST": config("DB_HOST", default="127.0.0.1"),
         "PORT": config("DB_PORT", default="1521"),
+    #configuracion para los test 
+    #True si quieres que la creacion sea automatica
+    #False porque yo cree todo manual desde oracle
+    "TEST": {
+            "USER": "C##GeraTest",
+            "PASSWORD": "GerardTest2026",
+            "CREATE_DB": False, # no lo n
+            "CREATE_USER": False,
+        },
     }
 }
 
