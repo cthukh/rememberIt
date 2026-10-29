@@ -10,12 +10,13 @@
 {% endblock %}
 
 {% block link_logo %}
-    {% url 'funcionario:funcionario' %}
+    {% url 'funcionarios:funcionario' %}
 {% endblock %}
 
 {% block nav_links %}
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">Residentes</a>
     <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
-    <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
 {% block content %}
@@ -35,15 +36,19 @@
                     <span class="empty-state-mark" aria-hidden="true"></span>
                     <span>Aún no hay recordatorios registrados.</span>
                 </div>
+
+                <a href="{% url 'residentes:inicio_residentes' %}" class="btn btn-primary w-100 mt-4">
+                    <i class="bi bi-people"></i> Ver residentes
+                </a>
             </section>
         </div>
         <div class="col-lg-5">
             <aside class="account-panel h-100" aria-labelledby="account-title">
                 <div class="account-panel-heading">
-                    <span class="account-avatar" aria-hidden="true">{{datUsu.first_name|first|upper|default:"R" }}</span>
+                    <span class="account-avatar" aria-hidden="true">{{ datUsu.first_name|first|upper|default:"R" }}</span>
                     <div>
-                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionario:perfil' username=datUsu.username %}">Tu perfil</a> </p>
-                    
+                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionarios:perfil' username=datUsu.username %}">Tu perfil</a> </p>
+
                         <h2 id="account-title">Datos de la cuenta</h2>
                     </div>
                 </div>

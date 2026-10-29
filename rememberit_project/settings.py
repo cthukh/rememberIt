@@ -116,6 +116,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# REDIRECCIONAMIENTO
+
+
+LOGIN_URL = 'funcionarios:iniciar_sesion'
+LOGIN_REDIRECT_URL = "funcionarios:funcionario"
+LOGOUT_REDIRECT_URL = 'funcionarios:iniciar_sesion'
+
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 

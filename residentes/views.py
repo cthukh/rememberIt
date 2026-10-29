@@ -7,7 +7,6 @@ def inicio_residentes(request):
     
     residentes = Residente.objects.all()
     
-    
     return render(request, 'inicio_residentes.html',{'residentes': residentes})
 
 
@@ -24,9 +23,9 @@ def crear_residente(request):
     return render(request, 'crear_cuenta.html', {'form': form})
 
 def detalle_residente(request, uuid):
+    residente = get_object_or_404(Residente.objects.prefetch_related('recordatorios__fechas'),uuid=uuid)
     
-    
-    return render(request, 'detalle_residente.html')
+    return render(request, 'detalle_residente.html', {'residente': residente})
 
 def update_residente(request, uuid):
     

@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from residentes.models import Residente
+from django.db.models import Count, Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -11,12 +13,21 @@ def base(request):
 
 @login_required
 def inicio(request):
-    print(request.user.username)
-    if not request.user.is_authenticated:
-        return redirect("funcionario:iniciar_sesion")
-    datosUsuario = request.user 
-
-    return render(request,"inicio.html",{"datUsu":datosUsuario})
+    residentes = (
+        Residente.objects
+        .filter(funcionario=request.user)
+        .annotate(
+            pendientes=Count(
+                'recordatorios__fechas',
+                filter=Q(recordatorios__fechas__cumplido=False),
+            )
+        )
+        .order_by('primer_nombre')
+    )
+    return render(request, "inicio.html", {
+        "datUsu": request.user,
+        "residentes": residentes,
+    })
 
 
 def iniciarSesion(request):
@@ -30,7 +41,7 @@ def iniciarSesion(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect("funcionario:funcionario")
+                return redirect("funcionarios:funcionario")
             messages.error(request, "El RUT o la contraseña no son correctos.")
     else:
         form = IniciarSesionFuncionario()

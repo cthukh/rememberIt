@@ -30,10 +30,12 @@ class CrearResidenteForm(forms.ModelForm):
 class ActuaResidenteForm(forms.ModelForm):
     class Meta:
         model = Residente
-        fields = ("alergias", "telefono_emergencias")
+        fields = ("alergias", "telefono_emergencias","funcionario","familiar")
         labels = {
             "alergias": "Alergias",
             "telefono_emergencias": "Teléfono de emergencias",
+            "funcionario": "Funcionario",
+            "familiar": "Familiar"
         }
         
     def __init__(self, *args, **kwargs):
