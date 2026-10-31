@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import Http404,HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -18,6 +19,9 @@ def inicio(request):
     print(request.user.username)
     if not request.user.is_authenticated:
         return redirect("funcionario:iniciar_sesion")
+    if not request.user.is_active:
+        return HttpResponse("Te desactivaron la cuenta chaval")
+
     datosUsuario = request.user 
 
     return render(request,"inicio.html",{"datUsu":datosUsuario})
@@ -97,24 +101,29 @@ def registro(request):
 
 @login_required
 def perfil(request,username):
-    username = request.user.username
-    datosUsuario = request.user
+    funcionario = Funcionario.objects.obtener_por_username(username)
+    if funcionario is None:
+        raise Http404("Funcionario no encontrado.")
+
     if request.user.is_superuser:
-        form = ActuaFuncionarioFormAdmin(instance=datosUsuario)
+        form = ActuaFuncionarioFormAdmin(instance=funcionario)
     else:
-        form = ActuaFuncionarioForm(instance=datosUsuario)
+        form = ActuaFuncionarioForm(instance=funcionario)
                 
-    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"username":username})
+    return render(request, "perfil.html", {"funcionario": funcionario, "form": form})
 
 @login_required
 def modificarFuncionario(request):
     if request.method != "POST":
         return redirect("funcionario:perfil")
 
-    form = ActuaFuncionarioForm(request.POST, instance=request.user)
+    funcionario = Funcionario.objects.obtener_por_username(request.user.username)
+    if funcionario is None:
+        raise Http404("Funcionario no encontrado.")
+    form = ActuaFuncionarioForm(request.POST, instance=funcionario)
     if form.is_valid():
         form.save()
         messages.success(request, "Tus datos de perfil se actualizaron correctamente.")
         return redirect("funcionario:perfil")
 
-    return render(request, "perfil.html", {"datUsu": request.user, "form": form})
+    return render(request, "perfil.html", {"funcionario": funcionario, "form": form})
