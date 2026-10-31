@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
-from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, ActuaFuncionarioForm
+from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, ActuaFuncionarioForm,ActuaFuncionarioFormAdmin
 from .models import Funcionario
 from core.validators import normalizar_rut
 
@@ -99,7 +99,11 @@ def registro(request):
 def perfil(request,username):
     username = request.user.username
     datosUsuario = request.user
-    form = ActuaFuncionarioForm(instance=datosUsuario)
+    if request.user.is_superuser:
+        form = ActuaFuncionarioFormAdmin(instance=datosUsuario)
+    else:
+        form = ActuaFuncionarioForm(instance=datosUsuario)
+                
     return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"username":username})
 
 @login_required
