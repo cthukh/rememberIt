@@ -3,8 +3,108 @@
 
 {% block content %}
 
-<div class="detalle_residente">
-    <h1>Residente Detalle</h1>
+<div class="container py-5 detalle_residente">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+        <h1 class="fw-bold mb-0">Detalle</h1>
+        <div class="d-flex gap-2">
+            <a href="{% url 'residentes:inicio_residentes' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <a href="{% url 'residentes:actualizar_residente' residente.uuid %}" class="btn btn-outline-warning btn-sm"><i class="bi bi-pencil-square"></i> Editar</a>
+        </div>
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0"
+                 style="width: 72px; height: 72px; font-size: 1.5rem;">
+                {{ residente.primer_nombre|slice:":1"|upper }}{{ residente.apellido_paterno|slice:":1"|upper }}
+            </div>
+            <div>
+                <h4 class="fw-semibold mb-1">
+                    {{ residente.primer_nombre }} {{ residente.segundo_nombre|default:"" }}
+                    {{ residente.apellido_paterno }} {{ residente.apellido_materno|default:"" }}
+                </h4>
+                <span class="text-muted">{{ residente.edad }} años</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3"><i class="bi bi-person-vcard text-primary"></i> Información</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">RUT</span>
+                            <span class="fw-medium">{{ residente.rut }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Alergias</span>
+                            <span class="fw-medium text-end">{{ residente.alergias|default:"Sin registro" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Tel. emergencias</span>
+                            <span class="fw-medium">{{ residente.telefono_emergencias|default:"Sin registro" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Funcionario</span>
+                            <span class="fw-medium">{{ residente.funcionario|default:"No asignado" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Familiar a cargo</span>
+                            <span class="fw-medium">{{ residente.familiar|default:"No asignado" }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between px-0">
+                            <span class="text-muted">Registrado el</span>
+                            <span class="fw-medium">{{ residente.fecha_creacion|date:"d/m/Y" }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="fw-semibold mb-3 d-flex justify-content-between">
+                        Recordatorios 
+                        <a href="{% url 'recordatorios:crear_recordatorio' residente.uuid %}" class="btn btn-outline-primary btn-sm">
+                            <i class='bx bxs-bell-ring'></i>
+                            Nuevo
+                        </a>
+                    </h5>
+
+                    {% for r in residente.recordatorios.all %}
+                        <div class="border rounded p-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-semibold mb-1">{{ r.nombre }}</h6>
+                                    <small class="text-muted">{{ r.descripcion }}</small>
+                                </div>
+                                <span class="badge text-bg-light border">{{ r.get_frecuencia_display }}</span>
+                            </div>
+
+                            <ul class="list-unstyled mt-3 mb-0 small">
+                                {% for f in r.fechas.all %}
+                                    <li class="d-flex justify-content-between align-items-center py-1">
+                                        <span><i class="bi bi-calendar-event text-muted"></i> {{ f.fecha_hora|date:"d/m/Y H:i" }}</span>
+                                        {% if f.cumplido %}
+                                            <span class="badge text-bg-success">Cumplido</span>
+                                        {% else %}
+                                            <span class="badge text-bg-warning">Pendiente</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted mb-0">Este residente no tiene recordatorios.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 {% endblock %}
