@@ -8,12 +8,12 @@
 {% endblock %}
 
 {% block nav_links %}
-    <a class="nav-link" href="{% url 'funcionario:funcionario' %}">Inicio</a>
-    <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
 {% block link_logo %}
-    {% url 'funcionario:funcionario' %}
+    {% url 'funcionarios:funcionario' %}
 {% endblock %}
 
 
@@ -27,7 +27,6 @@
     <div class="row g-4 dashboard-grid">
         <div class="col-lg-7">
             <section class="welcome-panel h-100" aria-labelledby="personal-title">
-                <div class="panel-symbol" aria-hidden="true">P</div>
                 <p class="section-label">Información personal</p>
                 <h2 id="personal-title">Datos personales</h2>
                 <dl class="account-details">
@@ -41,6 +40,9 @@
                         
                         <dd> {{ datUsu.rut }} </dd>
                     </div>
+                    <div>
+                        <dd> {{ datUsu.uuid }} </dd>
+                    </div>
                 </dl>
             </section>
         </div>
@@ -48,7 +50,7 @@
         <div class="col-lg-5">
             <aside class="account-panel h-100" aria-labelledby="contact-title">
                 <div class="account-panel-heading">
-                    <span class="account-avatar" aria-hidden="true">P</span>
+                    <span class="account-avatar" aria-hidden="true">👤</span>
                     <div>
                         <p class="section-label">Cuenta</p>
                         <h2 id="contact-title">Contacto y rol</h2>
@@ -60,7 +62,7 @@
                         <dd> {{ datUsu.email }} </dd>
                     </div>
                 </dl>
-                <form class="profile-form" method="post" action="{% url 'funcionario:agregarNumero' %}">
+                <form class="profile-form" method="post" action="{% url 'funcionarios:agregarNumero' %}">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="mb-3">

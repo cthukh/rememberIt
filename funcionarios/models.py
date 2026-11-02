@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -28,13 +29,13 @@ class Funcionario(AbstractUser):
     password, email, first_name, last_name, is_staff, is_superuser,
     is_active, date_joined (username se elimina abajo).
     """
-
+    username = None
     # required fields
     rut = models.CharField(max_length=12, unique=True, validators=[validar_rut])
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     first_name = models.CharField(max_length=60)
     last_name = models.CharField(max_length=60)
     email = models.EmailField(max_length=255, unique=True)
-    username = models.CharField(max_length=150, null=True, blank=True)
     # fields para añadir después desde perfil
     phone_number = models.CharField(max_length=30, unique=True, null=True, blank=True)
     rol = models.ForeignKey(Rol, on_delete=models.PROTECT, db_column='rol_id',

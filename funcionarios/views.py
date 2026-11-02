@@ -60,7 +60,7 @@ def registro(request):
             usuario = form.save()
             login(request, usuario)
             messages.success(request, "Tu cuenta está lista. Bienvenido/a.")
-            return redirect("funcionario:funcionario")
+            return redirect("funcionarios:funcionario")
         else:
             messages.error(request, "Por favor corrige los errores.")
     else:
@@ -68,21 +68,21 @@ def registro(request):
     return render(request,"registro.html",{"form":form})
 
 @login_required
-def perfil(request,username):
-    username = request.user.username
+def perfil(request,uuid):
+    uuid = request.user.uuid
     datosUsuario = request.user
     form = ActuaFuncionarioForm(instance=datosUsuario)
-    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"username":username})
+    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"uuid":uuid})
 
 @login_required
 def modificarFuncionario(request):
     if request.method != "POST":
-        return redirect("funcionario:perfil")
+        return redirect("funcionarios:funcionario")
 
     form = ActuaFuncionarioForm(request.POST, instance=request.user)
     if form.is_valid():
         form.save()
         messages.success(request, "Tus datos de perfil se actualizaron correctamente.")
-        return redirect("funcionario:perfil")
+        return redirect("funcionarios:funcionario")
 
     return render(request, "perfil.html", {"datUsu": request.user, "form": form})

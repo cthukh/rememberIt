@@ -14,8 +14,16 @@
 {% endblock %}
 
 {% block nav_links %}
-    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">Residentes</a>
-    <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
+    <a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    <!-- <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span> -->
+     <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
+        Tu perfil 
+        <svg xmlns="http://www.w3.org/2000/svg" class="bi" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+        </svg>
+    </a>
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
@@ -27,7 +35,7 @@
     </section>
 
     <div class="row g-4 dashboard-grid">
-        <div class="col-lg-7">
+        <div>
             <section class="welcome-panel h-100" aria-labelledby="reminders-title">
                 <p class="section-label">Organización diaria</p>
                 <h2 id="reminders-title">Recordatorios del hogar</h2>
@@ -42,12 +50,16 @@
                 </a>
             </section>
         </div>
-        <div class="col-lg-5">
+
+        <!-- deberiamos de mover a un apartado aparte -->
+        <div class="col-lg-5 d-none">
             <aside class="account-panel h-100" aria-labelledby="account-title">
-                <div class="account-panel-heading">
+                <div class="account-panel-heading d-flex justify-content-between">
                     <span class="account-avatar" aria-hidden="true">{{ datUsu.first_name|first|upper|default:"R" }}</span>
-                    <div>
-                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionarios:perfil' username=datUsu.username %}">Tu perfil</a> </p>
+                    <div class="d-block flex-row-reverse align-items-center justify-content-between">
+                        <p class="section-label">
+                            
+                        </p>
 
                         <h2 id="account-title">Datos de la cuenta</h2>
                     </div>

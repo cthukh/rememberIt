@@ -12,13 +12,18 @@ class CrearFuncionarioForm(UserCreationForm):
 
     class Meta:
         model= Funcionario
-        fields =('rut','first_name','last_name','email','username')
+        fields =('rut','first_name','last_name','email',)
+        labels = {
+            "rut": "RUT",
+            "first_name": "Nombre",
+            "last_name": "Apellido",
+            "email": "Correo electrónico",
+        }
 
 
 class IniciarSesionFuncionario(forms.Form):
     rut = forms.CharField(
         label="RUT",
-        widget=forms.TextInput(attrs={"autocomplete": "username"}),
     )
     password = forms.CharField(
         label="Contraseña",
