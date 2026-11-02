@@ -133,6 +133,94 @@
     font-weight: 600;
 }
 
+.staff-panel h2 {
+    margin-bottom: 12px;
+}
+
+.staff-table-wrapper {
+    overflow-x: auto;
+}
+
+.staff-name {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.staff-table {
+    width: 100%;
+    min-width: 900px;
+    border-collapse: separate;
+    border-spacing: 16px 0;
+    text-align: left;
+}
+
+.staff-table th,
+.staff-table td {
+    padding: 12px 8px;
+    border-top: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.staff-table th {
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.staff-table td {
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.staff-table td:nth-child(2),
+.staff-table td:nth-child(3) {
+    overflow-wrap: anywhere;
+}
+
+.staff-table th:first-child,
+.staff-table td:first-child {
+    padding-left: 8px;
+}
+
+.staff-table th:last-child,
+.staff-table td:last-child {
+    padding-right: 8px;
+}
+
+.staff-table th:last-child,
+.staff-table td:last-child {
+    white-space: nowrap;
+}
+
+.staff-table td:nth-child(4) {
+    color: var(--muted);
+    overflow-wrap: anywhere;
+}
+
+.staff-selection-hint {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+}
+
+.staff-status {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.staff-status-active {
+    color: #17613d;
+    background: #e5f4eb;
+}
+
+.staff-status-inactive {
+    color: #8a3030;
+    background: #f9e9e9;
+}
+
 @media (max-width: 575.98px) {
     .welcome-panel,
     .account-panel {
@@ -141,5 +229,11 @@
 
     .welcome-panel {
         min-height: auto;
+    }
+
+    .staff-table th,
+    .staff-table td {
+        padding-right: 10px;
+        padding-left: 10px;
     }
 }

@@ -42,7 +42,13 @@
                 <div class="account-panel-heading">
                     <span class="account-avatar" aria-hidden="true">{{datUsu.first_name|first|upper|default:"R" }}</span>
                     <div>
-                        <p class="section-label"> <a class="nav-link" href="{% url 'funcionario:perfil' username=datUsu.username %}">Tu perfil</a> </p>
+                        <p class="section-label">
+                            {% if datUsu.username %}
+                                <a class="nav-link" href="{% url 'funcionario:perfil' username=datUsu.username %}">Tu perfil</a>
+                            {% else %}
+                                Tu perfil
+                            {% endif %}
+                        </p>
                     
                         <h2 id="account-title">Datos de la cuenta</h2>
                     </div>
@@ -67,5 +73,64 @@
                 </dl>
             </aside>
         </div>
+        {% if request.user.is_superuser %}
+            <div class="col-12">
+                <section class="account-panel staff-panel" aria-labelledby="staff-title">
+                    <p class="section-label">Administración</p>
+                    <h2 id="staff-title">Funcionarios registrados</h2>
+                    <p class="panel-copy">Listado disponible solo para superusuarios.</p>
+                    {% if funcionarios %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="staff-table-wrapper">
+                                <table class="staff-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Seleccionar</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">RUT</th>
+                                            <th scope="col">Correo</th>
+                                            <th scope="col">Rol</th>
+                                            <th scope="col">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for funcionario in funcionarios %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" name="funcionarios" value="{{ funcionario.pk }}" aria-label="Seleccionar {{ funcionario.full_name }}" {% if funcionario.pk == request.user.pk %}disabled title="No puedes desactivar tu propia cuenta"{% endif %}>
+                                                </td>
+                                                <td>
+                                                    {% if funcionario.username %}
+                                                        <a class="staff-name" href="{% url 'funcionario:perfil' username=funcionario.username %}">{{ funcionario.full_name }}</a>
+                                                    {% else %}
+                                                        <span class="staff-name">{{ funcionario.full_name }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ funcionario.rut }}</td>
+                                                <td>{{ funcionario.email }}</td>
+                                                <td>{{ funcionario.rol|default:"Sin rol asignado" }}</td>
+                                                <td>
+                                                    <span class="staff-status {% if funcionario.is_active %}staff-status-active{% else %}staff-status-inactive{% endif %}">
+                                                        {% if funcionario.is_active %}Activo{% else %}Desactivado{% endif %}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-danger mt-3" type="submit" name="accion" value="desactivar">Desactivar seleccionados</button>
+                            <p class="staff-selection-hint">Puedes seleccionar varios. Tu propia cuenta no se puede desactivar aquí.</p>
+                        </form>
+                    {% else %}
+                        <div class="empty-state" role="status">
+                            <span class="empty-state-mark" aria-hidden="true"></span>
+                            <span>Aún no hay funcionarios registrados.</span>
+                        </div>
+                    {% endif %}
+                </section>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

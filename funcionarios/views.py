@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.http import Http404,HttpResponse
+from django.http import Http404, HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -22,9 +23,30 @@ def inicio(request):
     if not request.user.is_active:
         return HttpResponse("Te desactivaron la cuenta chaval")
 
-    datosUsuario = request.user 
+    if request.method == "POST" and request.POST.get("accion") == "desactivar":
+        if not request.user.is_superuser:
+            raise PermissionDenied
+        desactivados = Funcionario.objects.filter(
+            pk__in=request.POST.getlist("funcionarios"), is_active=True
+        ).exclude(pk=request.user.pk).update(is_active=False)
+        if desactivados:
+            messages.success(request, f"Se desactivaron {desactivados} funcionario(s).")
+        else:
+            messages.error(request, "Selecciona funcionarios activos para desactivar.")
+        return redirect("funcionario:funcionario")
 
-    return render(request,"inicio.html",{"datUsu":datosUsuario})
+    datosUsuario = request.user 
+    funcionarios = None
+    if request.user.is_superuser:
+        funcionarios = Funcionario.objects.select_related("rol").order_by(
+            "last_name", "first_name"
+        )
+
+    return render(
+        request,
+        "inicio.html",
+        {"datUsu": datosUsuario, "funcionarios": funcionarios},
+    )
 
 
 def iniciarSesion(request):
@@ -104,6 +126,8 @@ def perfil(request,username):
     funcionario = Funcionario.objects.obtener_por_username(username)
     if funcionario is None:
         raise Http404("Funcionario no encontrado.")
+    if funcionario != request.user and not request.user.is_superuser:
+        raise PermissionDenied
 
     if request.user.is_superuser:
         form = ActuaFuncionarioFormAdmin(instance=funcionario)
@@ -113,17 +137,20 @@ def perfil(request,username):
     return render(request, "perfil.html", {"funcionario": funcionario, "form": form})
 
 @login_required
-def modificarFuncionario(request):
-    if request.method != "POST":
-        return redirect("funcionario:perfil")
-
-    funcionario = Funcionario.objects.obtener_por_username(request.user.username)
+def modificarFuncionario(request, username):
+    funcionario = Funcionario.objects.obtener_por_username(username)
     if funcionario is None:
         raise Http404("Funcionario no encontrado.")
-    form = ActuaFuncionarioForm(request.POST, instance=funcionario)
+    if funcionario != request.user and not request.user.is_superuser:
+        raise PermissionDenied
+    if request.method != "POST":
+        return redirect("funcionario:perfil", username=username)
+
+    form_class = ActuaFuncionarioFormAdmin if request.user.is_superuser else ActuaFuncionarioForm
+    form = form_class(request.POST, instance=funcionario)
     if form.is_valid():
         form.save()
         messages.success(request, "Tus datos de perfil se actualizaron correctamente.")
-        return redirect("funcionario:perfil")
+        return redirect("funcionario:perfil", username=username)
 
     return render(request, "perfil.html", {"funcionario": funcionario, "form": form})

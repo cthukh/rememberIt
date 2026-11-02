@@ -24,6 +24,6 @@ urlpatterns = [
     
     path('cerrarSesion/', views.cerrarSesion, name='cerrar_sesion'),
     path('perfil/<str:username>',views.perfil,name="perfil"),
-    path('agregarNumero/',views.modificarFuncionario,name="agregarNumero")
+    path('agregarNumero/<str:username>', views.modificarFuncionario, name="agregarNumero")
 
 ]

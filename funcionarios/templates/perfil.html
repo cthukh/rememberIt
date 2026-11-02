@@ -60,7 +60,7 @@
                         <dd> {{ funcionario.email }} </dd>
                     </div>
                 </dl>
-                <form class="profile-form" method="post" action="{% url 'funcionario:agregarNumero' %}">
+                <form class="profile-form" method="post" action="{% url 'funcionario:agregarNumero' funcionario.username %}">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="mb-3">

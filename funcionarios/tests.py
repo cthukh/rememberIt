@@ -41,6 +41,60 @@ class IniciarSesionFuncionarioTests(TestCase):
         self.assertRedirects(response, reverse("funcionario:funcionario"))
 
 
+class DesactivacionMasivaTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.admin = Funcionario.objects.create_superuser(
+            rut="11111111-1",
+            password="ClaveSegura-de-prueba-2026",
+            email="admin@example.com",
+            first_name="Admin",
+            last_name="Prueba",
+        )
+        cls.funcionarios = [
+            Funcionario.objects.create_user(
+                rut=rut,
+                password="ClaveSegura-de-prueba-2026",
+                email=f"{index}@example.com",
+                first_name="Funcionario",
+                last_name=str(index),
+            )
+            for index, rut in enumerate(("12345678-5", "22222222-2"), start=1)
+        ]
+
+    def test_superusuario_desactiva_varios_funcionarios_sin_desactivarse(self):
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            reverse("funcionario:funcionario"),
+            {
+                "accion": "desactivar",
+                "funcionarios": [user.pk for user in self.funcionarios]
+                + [self.admin.pk, "no-es-un-id", str(2**100)],
+            },
+        )
+
+        self.assertRedirects(response, reverse("funcionario:funcionario"))
+        self.assertFalse(
+            Funcionario.objects.filter(
+                pk__in=[user.pk for user in self.funcionarios], is_active=True
+            ).exists()
+        )
+        self.admin.refresh_from_db()
+        self.assertTrue(self.admin.is_active)
+
+    def test_usuario_no_administrador_no_puede_desactivar_usuarios(self):
+        self.client.force_login(self.funcionarios[0])
+
+        response = self.client.post(
+            reverse("funcionario:funcionario"),
+            {"accion": "desactivar", "funcionarios": [self.funcionarios[1].pk]},
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.funcionarios[1].refresh_from_db()
+        self.assertTrue(self.funcionarios[1].is_active)
+
+
 @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
 class RecuperarContrasenaTests(TestCase):
     @classmethod
