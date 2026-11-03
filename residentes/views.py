@@ -1,26 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Residente
-from .forms import CrearResidenteForm,ActuaResidenteForm
+from .forms import ActuaResidenteForm
 
 
 def inicio_residentes(request):
-    
     residentes = Residente.objects.all()
-    
-    return render(request, 'inicio_residentes.html',{'residentes': residentes})
-
-
-def crear_residente(request):
-    
-    if request.method == 'POST':
-        form = CrearResidenteForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('inicio_residentes')
-    else:
-        form = CrearResidenteForm()
-    
-    return render(request, 'crear_cuenta.html', {'form': form})
+    return render(request, 'inicio_residentes.html', {'residentes': residentes})
 
 def detalle_residente(request, uuid):
     residente = get_object_or_404(Residente.objects.prefetch_related('recordatorios__fechas'),uuid=uuid)

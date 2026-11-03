@@ -1,0 +1,47 @@
+<!-- Cambiar a modulo de familiares -->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block extra_css %}
+   <link href="{% static 'registro.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">
+        Mi perfil 
+    </a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+
+{% block content %}
+<main class="register-page">
+    <section class="register-panel" aria-labelledby="register-title">
+        <h1 id="register-title">Crear cuenta de funcionario</h1> </br>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" class="register-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn btn-success w-100" type="submit">Crear cuenta</button>
+        </form>
+    </section>
+</main>
+{% endblock %}

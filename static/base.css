@@ -3,10 +3,30 @@
 	--principal-logo: #5c6747;			/* Logo visible R*/
 	--hover-links: #98A77C;		/* Links hover*/
 	--ink: #262B1D;  			/* H1, letras fuertes/grandes */
-	--muted: #728156;			/* Letras en gris / pequeñas*/
+	--primary: #728156;			/* Letras en gris / pequeñas*/
 	--line: #dce7e2;			/* Lineas decorativas*/
+	
+	--color-button: #728156;
+	--color-button-hover: #98A77C;
+	--color-border: #dce7e2;
 	--paper: #ffffff;			/* Fondo tarjetas principales*/
+	--background-active: #F8F9FA;
 }
+
+.boton-primario {
+	background: var(--color-button);
+	color: var(--paper);
+
+}
+.boton-primario:hover {
+	background: var(--color-button-hover);
+	color: var(--paper);
+}
+.bg-primario {
+	background: var(--primary);
+}
+
+
 
 * {
 	box-sizing: border-box;
@@ -40,7 +60,7 @@ body {
 
 .app-header {
 	border-bottom: 1px solid rgba(32, 93, 77, 0.12);
-	background: rgba(255, 255, 255, 0.9);
+	background: var(--background-active);
 }
 
 .navbar {
@@ -78,7 +98,7 @@ body {
 .app-footer {
 	padding: 18px 0;
 	border-top: 1px solid var(--line);
-	color: var(--muted);
+	color: var(--primary);
 	background: rgba(255, 255, 255, 0.72);
 	font-size: 0.88rem;
 }
@@ -106,7 +126,7 @@ body {
 
 .login-intro {
 	margin: 9px 0 24px;
-	color: var(--muted);
+	color: var(--primary);
 }
 
 .login-form p {
@@ -146,7 +166,7 @@ body {
 
 .register-prompt {
 	margin: 22px 0 0;
-	color: var(--muted);
+	color: var(--primary);
 	text-align: center;
 }
 

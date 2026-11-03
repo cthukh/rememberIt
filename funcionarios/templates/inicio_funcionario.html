@@ -14,15 +14,19 @@
 {% endblock %}
 
 {% block nav_links %}
+    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">    <!-- active -->
+        Inicio
+    </a>
     <a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
         Residentes
     </a>
-    <!-- <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span> -->
-     <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
-        Tu perfil 
-        <svg xmlns="http://www.w3.org/2000/svg" class="bi" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
-        </svg>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link icon-link icon-link-hover" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
+        Mi perfil 
     </a>
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
@@ -45,13 +49,13 @@
                     <span>Aún no hay recordatorios registrados.</span>
                 </div>
 
-                <a href="{% url 'residentes:inicio_residentes' %}" class="btn btn-primary w-100 mt-4">
+                <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
                     <i class="bi bi-people"></i> Ver residentes
                 </a>
             </section>
         </div>
 
-        <!-- deberiamos de mover a un apartado aparte -->
+        <!--? deberiamos de mover a un apartado aparte -->
         <div class="col-lg-5 d-none">
             <aside class="account-panel h-100" aria-labelledby="account-title">
                 <div class="account-panel-heading d-flex justify-content-between">

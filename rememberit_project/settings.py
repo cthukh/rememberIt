@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'residentes',
     'recordatorios',
     'tratamientos',
+    'administracion',
 ]
 
 MIDDLEWARE = [
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_URL = 'funcionarios:iniciar_sesion'
 LOGIN_REDIRECT_URL = "funcionarios:funcionario"
-LOGOUT_REDIRECT_URL = 'funcionarios:iniciar_sesion'
+LOGOUT_REDIRECT_URL = 'home'
 
 
 

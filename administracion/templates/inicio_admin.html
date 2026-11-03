@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Administración{% endblock %}
+
+{% block link_logo %}{% url 'funcionarios:funcionario' %}{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link disabled" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">
+        Mi perfil 
+    </a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+
+{% block content %}
+<section class="d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3 mb-4" aria-labelledby="admin-title">
+	<div>
+		<h1 class="h2 fw-bold mb-2" id="admin-title">Panel de gestión interna</h1>
+		<p class="text-secondary mb-0">Hola, {{ request.user.first_name|default:request.user.rut }}. Administra el equipo y revisa los datos del hogar.</p>
+	</div>
+	<div class="d-inline-flex gap-5">
+		<a class="btn boton-primario d-inline-flex align-items-center gap-2" href="{% url 'administracion:crear_residente' %}">
+			<i class="bx bx-user-plus" aria-hidden="true"></i>
+			Registrar residente
+		</a>
+		<a class="btn boton-primario d-inline-flex align-items-center gap-2" href="{% url 'administracion:crear_funcionario' %}">
+			<i class="bx bx-user-plus" aria-hidden="true"></i>
+			Registrar funcionario
+		</a>
+	</div>	
+</section>
+
+<div class="row g-4">
+	<div class="col-12 col-xl-8">
+		<section class="h-100 bg-white border rounded-3 p-3 p-md-4" aria-labelledby="staff-title">
+			<div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+				<div>
+					<h2 class="h5 fw-bold mb-1" id="staff-title">Funcionarios</h2>
+					<p class="small text-secondary mb-0">Cuentas y roles del equipo de trabajo.</p>
+				</div>
+				{% if funcionarios %}
+					<span class="badge text-bg-light border">{{ funcionarios|length }} usuarios en el listado</span>
+				{% endif %}
+			</div>
+
+			{% if funcionarios %}
+				<div class="table-responsive">
+					<table class="table align-middle mb-0">
+						<thead>
+							<tr class="small text-secondary">
+								<th scope="col">Funcionario</th>
+								<th scope="col">Rol</th>
+								<th scope="col">Estado</th>
+								<th scope="col"><span class="visually-hidden">Acciones</span></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for funcionario in funcionarios %}
+								<tr>
+									<td>
+										<div class="fw-semibold">{{ funcionario.full_name|default:funcionario.rut }}</div>
+										<div class="small text-secondary">{{ funcionario.email|default:"Sin correo registrado" }}</div>
+									</td>
+									<td>{{ funcionario.rol|default:"Sin rol asignado" }}</td>
+									<td>
+										{% if funcionario.is_active %}
+											<span class="badge text-bg-success">Activo</span>
+										{% else %}
+											<span class="badge text-bg-secondary">Inactivo</span>
+										{% endif %}
+									</td>
+									<td class="text-end">
+										<a class="btn btn-sm btn-outline-secondary" href="{% url 'funcionarios:perfil' uuid=funcionario.uuid %}">Ver perfil</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			{% else %}
+				<div class="border rounded-3 bg-light p-4 text-center" role="status">
+					<i class="bx bx-group fs-2 text-success" aria-hidden="true"></i>
+					<p class="fw-semibold mb-1">No hay funcionarios para mostrar</p>
+					<p class="small text-secondary mb-3">Cuando se cargue el equipo, aparecerá aquí con su rol y estado.</p>
+					<a class="btn btn-outline-success btn-sm icon-link icon-link-hover" href="{% url 'administracion:crear_funcionario' %}">
+						Registrar el primero
+						<svg xmlns="http://www.w3.org/2000/svg" class="bi" viewBox="0 0 16 16" aria-hidden="true">
+        				    <path d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+        				</svg>
+					</a>
+				</div>
+			{% endif %}
+		</section>
+	</div>
+
+	<div class="col-12 col-xl-4">
+		<section class="h-100 bg-white border rounded-3 p-3 p-md-4" aria-labelledby="organization-title">
+			<div class="d-flex align-items-center gap-2 mb-3">
+				<i class="bx bx-buildings fs-4 text-success" aria-hidden="true"></i>
+				<h2 class="h5 fw-bold mb-0" id="organization-title">Gestión de la empresa</h2>
+			</div>
+			<p class="text-secondary">La información institucional no está disponible en este panel. Por ahora, puedes revisar los datos de la cuenta con permisos administrativos.</p>
+			<dl class="mb-0">
+				<div class="border-top py-3">
+					<dt class="small text-secondary fw-normal">Administrador</dt>
+					<dd class="fw-semibold mb-0">{{ request.user.full_name|default:request.user.rut }}</dd>
+				</div>
+				<div class="border-top py-3">
+					<dt class="small text-secondary fw-normal">Correo</dt>
+					<dd class="fw-semibold mb-0 text-break">{{ request.user.email|default:"Sin correo registrado" }}</dd>
+				</div>
+				<div class="border-top py-3">
+					<dt class="small text-secondary fw-normal">Rol</dt>
+					<dd class="fw-semibold mb-0">{{ request.user.rol|default:"Sin rol asignado" }}</dd>
+				</div>
+			</dl>
+			<a class="btn btn-outline-success w-100 mt-2" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">Revisar mi cuenta</a>
+		</section>
+	</div>
+</div>
+{% endblock %}
+

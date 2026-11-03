@@ -9,6 +9,17 @@
 
 {% block nav_links %}
     <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link icon-link icon-link-hover" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link disabled" href="">
+        Mi perfil 
+    </a>
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
@@ -19,8 +30,7 @@
 
 {% block content %}
     <section class="welcome-heading" aria-labelledby="profile-title">
-        <p class="eyebrow">Mi cuenta</p>
-        <h1 id="profile-title">Perfil de funcionario</h1>
+        <h1 id="profile-title">Mi perfil</h1>
         <p>Información personal y datos de contacto.</p>
     </section>
 
@@ -31,17 +41,17 @@
                 <h2 id="personal-title">Datos personales</h2>
                 <dl class="account-details">
                     <div>
-                        <dd> {{ datUsu.first_name }} </dd>
+                        <dd> {{ user.first_name }} </dd>
                     </div>
                     <div>
-                        <dd> {{ datUsu.last_name }} </dd>
+                        <dd> {{ user.last_name }} </dd>
                     </div>
                     <div>
                         
-                        <dd> {{ datUsu.rut }} </dd>
+                        <dd> {{ user.rut }} </dd>
                     </div>
                     <div>
-                        <dd> {{ datUsu.uuid }} </dd>
+                        <dd> {{ user.uuid }} </dd>
                     </div>
                 </dl>
             </section>
@@ -59,10 +69,10 @@
                 <dl class="account-details">
                     <div>
                         <dt>Correo electrónico</dt>
-                        <dd> {{ datUsu.email }} </dd>
+                        <dd> {{ user.email }} </dd>
                     </div>
                 </dl>
-                <form class="profile-form" method="post" action="{% url 'funcionarios:agregarNumero' %}">
+                <form class="profile-form" method="post" action="#">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="mb-3">

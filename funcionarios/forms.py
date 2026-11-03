@@ -2,25 +2,6 @@ from django import forms
 from .models import Funcionario
 from django.contrib.auth.forms import UserCreationForm
 
-
-class CrearFuncionarioForm(UserCreationForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs['class'] = 'form-control'
-
-    class Meta:
-        model= Funcionario
-        fields =('rut','first_name','last_name','email',)
-        labels = {
-            "rut": "RUT",
-            "first_name": "Nombre",
-            "last_name": "Apellido",
-            "email": "Correo electrónico",
-        }
-
-
 class IniciarSesionFuncionario(forms.Form):
     rut = forms.CharField(
         label="RUT",

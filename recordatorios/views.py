@@ -23,4 +23,4 @@ def crear_recordatorio(request, uuid):
     else:
         form = CrearRecordatorioForm()
 
-    return render(request, 'form_recordatorio.html', {'form': form,'residente': residente,})
+    return render(request, 'crear_recordatorio.html', {'form': form,'residente': residente,})

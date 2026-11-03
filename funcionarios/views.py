@@ -1,12 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from residentes.models import Residente
 from django.db.models import Count, Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import CrearFuncionarioForm, IniciarSesionFuncionario, ActuaFuncionarioForm
-
-# Create your views here.
+from .forms import IniciarSesionFuncionario, ActuaFuncionarioForm
+from .models import Funcionario
 
 def base(request):
     return render(request,"base.html")
@@ -24,7 +23,7 @@ def inicio(request):
         )
         .order_by('primer_nombre')
     )
-    return render(request, "inicio.html", {
+    return render(request, "inicio_funcionario.html", {
         "datUsu": request.user,
         "residentes": residentes,
     })
@@ -45,44 +44,15 @@ def iniciarSesion(request):
             messages.error(request, "El RUT o la contraseña no son correctos.")
     else:
         form = IniciarSesionFuncionario()
-    return render(request, "iniciarses.html", {"form": form})
+    return render(request, "iniciar_sesion.html", {"form": form})
 
 @login_required
 def cerrarSesion(request):
     logout(request)
     return redirect("funcionarios:iniciar_sesion")
 
-
-def registro(request):
-    if request.method == 'POST':
-        form = CrearFuncionarioForm(request.POST)
-        if form.is_valid():
-            usuario = form.save()
-            login(request, usuario)
-            messages.success(request, "Tu cuenta está lista. Bienvenido/a.")
-            return redirect("funcionarios:funcionario")
-        else:
-            messages.error(request, "Por favor corrige los errores.")
-    else:
-        form = CrearFuncionarioForm()
-    return render(request,"registro.html",{"form":form})
-
 @login_required
 def perfil(request,uuid):
-    uuid = request.user.uuid
-    datosUsuario = request.user
-    form = ActuaFuncionarioForm(instance=datosUsuario)
-    return render(request, "perfil.html", {"datUsu": datosUsuario, "form": form,"uuid":uuid})
-
-@login_required
-def modificarFuncionario(request):
-    if request.method != "POST":
-        return redirect("funcionarios:funcionario")
-
-    form = ActuaFuncionarioForm(request.POST, instance=request.user)
-    if form.is_valid():
-        form.save()
-        messages.success(request, "Tus datos de perfil se actualizaron correctamente.")
-        return redirect("funcionarios:funcionario")
-
-    return render(request, "perfil.html", {"datUsu": request.user, "form": form})
+    user = get_object_or_404(Funcionario, uuid=uuid)
+    form = ActuaFuncionarioForm(instance=user)
+    return render(request, "perfil_funcionario.html", {"user": user, "form": form,"uuid":uuid})

@@ -1,17 +1,41 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block title %}
+residentes
+{% endblock %}
 
+{% block link_logo %}
+    {% url 'funcionarios:funcionario' %}
+{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link disabled" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link icon-link icon-link-hover" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">
+        Mi perfil 
+    </a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+
+{% block content %}
 <div class="container py-4">
-    <h1 class="fw-bold mb-4">Inicio</h1>
+    <h1 class="fw-bold mb-4">Inicio residentes</h1>
 
     <div class="row g-3">
         {% for residente in residentes %}
             <div class="col-12 col-md-6 col-lg-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-body d-flex align-items-center">
-                        <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+                        <div class="rounded-circle bg-primario text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0 me-3"
                              style="width: 48px; height: 48px;">
                             {{ residente.primer_nombre|slice:":1"|upper }}{{ residente.apellido_paterno|slice:":1"|upper }}
                         </div>
@@ -22,21 +46,24 @@
                             <small class="text-muted">{{ residente.edad }} años</small>
                         </div>
                         <div class="d-flex gap-2 ms-3">
-                            <a href="{% url 'residentes:detalle_residente' residente.uuid %}" class="btn btn-outline-primary btn-sm"
+                            <a href="{% url 'residentes:detalle_residente' residente.uuid %}" class="btn btn-outline-success btn-sm"
                                title="Ver información completa">
                                 <i class='bx bx-info-circle'></i>
                             </a>
-                            <a href="{% url 'residentes:actualizar_residente' residente.uuid %}"
-                               class="btn btn-outline-warning btn-sm" title="Editar residente">
-                                <i class='bx bxs-edit'></i>
-                            </a>
+                            
                         </div>
                     </div>
                 </div>
             </div>
         {% empty %}
             <div class="col-12">
-                <div class="alert alert-info mb-0">No hay residentes registrados.</div>
+                <div class="alert alert-success mb-0 align-items-center d-flex justify-content-between">
+                    No hay residentes registrados, agrega uno para comenzar.
+                    <a class="btn boton-primario d-inline-flex align-items-center gap-2" href="{% url 'residentes:crear_residente' %}">
+                        <i class="bx bx-user-plus" aria-hidden="true"></i>
+                        Registrar residente
+                    </a>
+                </div>
             </div>
         {% endfor %}
     </div>

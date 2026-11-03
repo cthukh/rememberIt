@@ -1,12 +1,12 @@
-/* :root {
+:root {
 	color-scheme: light;
 	--ink: #203630;
-	--muted: #62736d;
+	--primary: #62736d;
 	--green: #28745f;
 	--green-dark: #205d4d;
 	--line: #dce7e2;
 	--paper: #ffffff;
-} */
+}
 
 * {
 	box-sizing: border-box;
@@ -65,7 +65,7 @@ h1 {
 
 .intro {
 	margin: 10px 0 26px;
-	color: var(--muted);
+	color: var(--primary);
 	line-height: 1.55;
 }
 
@@ -93,7 +93,7 @@ h1 {
 .register-form .helptext {
 	display: block;
 	margin-top: 6px;
-	color: var(--muted);
+	color: var(--primary);
 	font-size: 0.8rem;
 }
 
@@ -121,7 +121,7 @@ h1 {
 
 .auth-switch {
 	margin: 22px 0 0;
-	color: var(--muted);
+	color: var(--primary);
 	text-align: center;
 }
 
