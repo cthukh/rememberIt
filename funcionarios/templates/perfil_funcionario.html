@@ -17,9 +17,15 @@
             Administración
         </a>
     {% endif %}
-    <a class="nav-link disabled" href="">
-        Mi perfil 
-    </a>
+    {% if uuid == request.user.uuid %}
+        <a class="nav-link disabled" href="#">
+            Mi perfil 
+        </a>
+    {% else %}
+        <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">
+            Mi perfil 
+        </a>
+    {% endif %}
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
@@ -35,11 +41,50 @@
     </section>
 
     <div class="row g-4 dashboard-grid">
+
+        <!--! inicio modi -->
+        <div class="col-lg-7 d-none">
+            <aside class="account-panel h-100" aria-labelledby="account-title">
+                <div class="account-panel-heading d-flex justify-content-between">
+                    <span class="account-avatar" aria-hidden="true">{{ datUsu.first_name|first|upper|default:"R" }}</span>
+                    <div class="d-block flex-row-reverse align-items-center justify-content-between">
+                        <p class="section-label">
+                            
+                        </p>
+
+                        <h2 id="account-title">Datos de la cuenta</h2>
+                    </div>
+                </div>
+                <dl class="account-details">
+                    <div>
+                        <dt>Nombre</dt>
+                        <dd>{{ datUsu.full_name|default:request.user.rut }}</dd>
+                    </div>
+                    <div>
+                        <dt>RUT</dt>
+                        <dd>{{ datUsu.rut }}</dd>
+                    </div>
+                    <div>
+                        <dt>Correo</dt>
+                        <dd>{{ datUsu.email|default:"Sin correo registrado" }}</dd>
+                    </div>
+                    <div>
+                        <dt>Rol</dt>
+                        <dd>{{ datUsu.rol|default:"Sin asignar" }}</dd>
+                    </div>
+                </dl>
+            </aside>
+        </div>
+        <!--! fin modi -->
+
         <div class="col-lg-7">
             <section class="welcome-panel h-100" aria-labelledby="personal-title">
                 <p class="section-label">Información personal</p>
                 <h2 id="personal-title">Datos personales</h2>
                 <dl class="account-details">
+                    <div>
+                        <dd> {{ user.id }} </dd>
+                    </div>
                     <div>
                         <dd> {{ user.first_name }} </dd>
                     </div>
@@ -52,6 +97,9 @@
                     </div>
                     <div>
                         <dd> {{ user.uuid }} </dd>
+                    </div>
+                    <div>
+                        <dd> {{ user.rol.nombre }} </dd>
                     </div>
                 </dl>
             </section>
@@ -72,7 +120,7 @@
                         <dd> {{ user.email }} </dd>
                     </div>
                 </dl>
-                <form class="profile-form" method="post" action="#">
+                <form class="profile-form" method="post" action="{% url 'administracion:modificar_funcionario' uuid=user.uuid %}">
                     {% csrf_token %}
                     {% for field in form %}
                         <div class="mb-3">
@@ -83,7 +131,9 @@
                             {% endfor %}
                         </div>
                     {% endfor %}
-                    <button class="btn btn-success" type="submit">Guardar cambios</button>
+                    {% if request.user.is_superuser == True and request.user.is_active == True %}
+                        <button class="btn btn-success" type="submit">Guardar cambios</button>
+                    {% endif %}
                 </form>
             </aside>
         </div>

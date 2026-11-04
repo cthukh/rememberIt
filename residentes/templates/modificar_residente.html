@@ -1,12 +1,29 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block link_logo %}
+    {% url 'funcionarios:funcionario' %}
+{% endblock %}
 
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">
+        Residentes
+    </a>
+    {% if request.user.is_superuser == True and request.user.is_active == True %}
+        <a class="nav-link" href="{% url 'administracion:inicio_admin' %}">
+            Administración
+        </a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">
+        Mi perfil 
+    </a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+{% block content %}
 <main class="register-page">
         <section class="register-panel" aria-labelledby="register-title">
-            <div class="brand-mark" aria-hidden="true">R</div>
-            <p class="eyebrow">RememberIt · Gestión del hogar</p>
             <a href="{% url 'residentes:inicio_residentes' %}" class="btn text-white rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm" style="background-color: #4F5D38;">
                 <i class='bx bx-arrow-back fs-5'></i>
                 <span>Volver al inicio</span>

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ recordatorio.nombre }}{% endblock %}
+
+{% block link_logo %}
+    {% url 'funcionarios:funcionario' %}
+{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:funcionario' %}">Inicio</a>
+    <a class="nav-link" href="{% url 'residentes:inicio_residentes' %}">Residentes</a>
+    {% if request.user.is_superuser and request.user.is_active %}
+        <a class="nav-link" href="{% url 'administracion:inicio_admin' %}">Administración</a>
+    {% endif %}
+    <a class="nav-link" href="{% url 'funcionarios:perfil' uuid=request.user.uuid %}">Mi perfil</a>
+    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+{% block content %}
+<section class="py-3 py-lg-4" aria-labelledby="recordatorio-title">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
+        <div>
+            <p class="text-muted small text-uppercase fw-semibold mb-1">Detalle del recordatorio</p>
+            <h1 id="recordatorio-title" class="h2 fw-bold mb-0">{{ recordatorio.nombre }}</h1>
+        </div>
+        {% if recordatorio.residente %}
+        <div class="d-flex gap-2">
+            <a href="{% url 'funcionarios:funcionario' %}" class="btn boton-primario text-white rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm">
+                <i class='bx bx-arrow-back fs-5'></i>
+                <span>Volver al inicio</span>
+            </a>
+            
+            <a href="{% url 'residentes:detalle_residente' uuid=recordatorio.residente.uuid %}" class="btn boton-primario text-white rounded-pill d-inline-flex align-items-center gap-2 px-3 py-1 shadow-sm">
+                <i class='bx bx-arrow-forward fs-5'></i>
+                <span>Ver residente</span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-12 col-lg-5">
+            <section class="card shadow-sm h-100" aria-labelledby="informacion-title">
+                <div class="card-body p-4">
+                    <h2 id="informacion-title" class="h5 fw-semibold mb-3">Información</h2>
+                    <p class="text-body-secondary mb-4">{{ recordatorio.descripcion|default:"Sin descripción registrada."|linebreaksbr }}</p>
+
+                    <dl class="row mb-0">
+                        <dt class="col-5 text-muted fw-normal">Frecuencia</dt>
+                        <dd class="col-7 fw-semibold">{{ recordatorio.get_frecuencia_display }}</dd>
+
+                        <dt class="col-5 text-muted fw-normal">Fecha de inicio</dt>
+                        <dd class="col-7">{{ recordatorio.fecha_inicio|date:"d/m/Y H:i" }}</dd>
+
+                        <dt class="col-5 text-muted fw-normal">Fecha de término</dt>
+                        <dd class="col-7">{{ recordatorio.fecha_fin|date:"d/m/Y H:i"|default:"Sin fecha de término" }}</dd>
+
+                        <dt class="col-5 text-muted fw-normal">Residente</dt>
+                        <dd class="col-7 mb-0">
+                            {% if recordatorio.residente %}
+                                {{ recordatorio.residente.primer_nombre }} {{ recordatorio.residente.apellido_paterno }}
+                            {% else %}
+                                Sin residente asignado
+                            {% endif %}
+                        </dd>
+                    </dl>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-12 col-lg-7">
+            <section class="card shadow-sm h-100" aria-labelledby="fechas-title">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+                        <h2 id="fechas-title" class="h5 fw-semibold mb-0">Fechas programadas</h2>
+                        <span class="badge text-bg-light border">{{ recordatorio.fechas.all|length }}</span>
+                    </div>
+
+                    {% with fechas=recordatorio.fechas.all %}
+                        {% if fechas %}
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Fecha y hora</th>
+                                            <th scope="col" class="text-end">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for fecha in fechas %}
+                                            <tr>
+                                                <td>{{ fecha.fecha_hora|date:"d/m/Y H:i" }}</td>
+                                                <td class="text-end">
+                                                    {% if fecha.cumplido %}
+                                                        <span class="badge text-bg-success">Cumplido</span>
+                                                    {% else %}
+                                                        <span class="badge text-bg-warning">Pendiente</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">Este recordatorio todavía no tiene fechas programadas.</p>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

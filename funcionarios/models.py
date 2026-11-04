@@ -12,7 +12,7 @@ class Rol(models.Model):
         'dir': 'Director/a',
         'adm': 'Administrativo',
         'enf': 'Enfermero/a',
-        'tec': 'Técnico',
+        'tec': 'Técnico/a',
     }
 
     rol_id = models.BigAutoField(primary_key=True)
@@ -52,7 +52,7 @@ class Funcionario(AbstractUser):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name} - RUT: {self.rut}"
+        return f"{self.rol} | {self.first_name} {self.last_name} | {self.rut}"
 
     @property
     def full_name(self):

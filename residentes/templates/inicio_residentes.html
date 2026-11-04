@@ -5,6 +5,10 @@
 residentes
 {% endblock %}
 
+{% block extra_css %}
+    <link href="{% static 'inicio.css' %}" rel="stylesheet">
+{% endblock %}
+
 {% block link_logo %}
     {% url 'funcionarios:funcionario' %}
 {% endblock %}
@@ -27,6 +31,7 @@ residentes
 
 
 {% block content %}
+{% if request.user.rol_id == 1 or request.user.rol_id == 2 %}
 <div class="container py-4">
     <h1 class="fw-bold mb-4">Inicio residentes</h1>
 
@@ -68,5 +73,53 @@ residentes
         {% endfor %}
     </div>
 </div>
+{% elif request.user.rol_id == 3 or request.user.rol_id == 4 %}
+    {% if residentes_asignados %}
+        <div class="container py-4">
+            <h1 class="fw-bold mb-4">Inicio residentes</h1>
+            <div class="row g-3">
+                {% for residente in residentes_asignados %}
+                    {% if residente.funcionario.rut == request.user.rut %}
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="card shadow-sm h-100">
+                                <div class="card-body d-flex align-items-center">
+                                    <div class="rounded-circle bg-primario text-white fw-bold d-flex align-items-center justify-content-center flex-shrink-0 me-3"
+                                        style="width: 48px; height: 48px;">
+                                        {{ residente.primer_nombre|slice:":1"|upper }}{{ residente.apellido_paterno|slice:":1"|upper }}
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden">
+                                        <div class="fw-semibold text-truncate">
+                                            {{ residente.primer_nombre }} {{ residente.apellido_paterno }}
+                                        </div>
+                                        <small class="text-muted">{{ residente.edad }} años</small>
+                                    </div>
+                                    <div class="d-flex gap-2 ms-3">
+                                        <a href="{% url 'residentes:detalle_residente' residente.uuid %}" class="btn btn-outline-success btn-sm"
+                                        title="Ver información completa">
+                                            <i class='bx bx-info-circle'></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-success mb-0 align-items-center d-flex justify-content-between">
+                Aún no tienes residentes asignados.
+            </div>
+        </div>
+    {% endif %}
+
+{% else %}
+    <div class="empty-state" role="status">
+        <span class="empty-state-mark" aria-hidden="true"></span>
+        <span>Aún no se te ha asignado un rol.</span>
+    </div>
+{% endif %}
 
 {% endblock %}

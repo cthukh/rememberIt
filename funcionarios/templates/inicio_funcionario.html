@@ -32,6 +32,8 @@
 {% endblock %}
 
 {% block content %}
+<!--todo Crear apartado para director -->
+{% if request.user.rol_id == 3 or request.user.rol_id == 4 or request.user.rol_id == 1 %}
     <section class="welcome-heading" aria-labelledby="welcome-title">
         <p class="eyebrow">Panel principal</p>
         <h1 id="welcome-title">Hola, {{ request.user.first_name|default:request.user.rut }}</h1>
@@ -39,54 +41,88 @@
     </section>
 
     <div class="row g-4 dashboard-grid">
-        <div>
+        <div class="col-12">
             <section class="welcome-panel h-100" aria-labelledby="reminders-title">
-                <p class="section-label">Organización diaria</p>
-                <h2 id="reminders-title">Recordatorios del hogar</h2>
-                <p class="panel-copy">Tus recordatorios aparecerán aquí para que puedas tener a mano las actividades importantes del hogar.</p>
-                <div class="empty-state" role="status">
-                    <span class="empty-state-mark" aria-hidden="true"></span>
-                    <span>Aún no hay recordatorios registrados.</span>
+                <div class="reminders-heading">
+                    <div>
+                        <p class="section-label">Organización diaria</p>
+                        <h2 id="reminders-title">Recordatorios del hogar</h2>
+                        <p class="panel-copy">Actividades importantes de los residentes que tienes asignados.</p>
+                    </div>
+                    <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario reminders-action">
+                        <i class="bx bx-group" aria-hidden="true"></i>
+                        <span>Ver residentes</span>
+                    </a>
                 </div>
 
-                <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
-                    <i class="bi bi-people"></i> Ver residentes
-                </a>
+                <div class="resident-reminders-list">
+                    {% for residente in residentes %}
+                        <section class="resident-reminders" aria-labelledby="resident-{{ residente.uuid }}">
+                            <div class="resident-reminders-heading">
+                                <h3 id="resident-{{ residente.uuid }}">
+                                    {{ residente.primer_nombre }} {{ residente.apellido_paterno }}
+                                </h3>
+                                <a href="{% url 'residentes:detalle_residente' residente.uuid %}"
+                                   class="btn btn-sm btn-outline-secondary resident-info-link">
+                                    <i class="bx bx-info-circle" aria-hidden="true"></i>
+                                    <span>Ver residente</span>
+                                </a>
+                            </div>
+
+                            <div class="resident-reminder-list">
+                                {% for r in residente.recordatorios.all %}
+                                    <article class="resident-reminder">
+                                        <div class="resident-reminder-main">
+                                            <a href="{% url 'recordatorios:detalle_recordatorio' r.uuid %}" class="resident-reminder-link">
+                                                <span>{{ r.nombre }}</span>
+                                                <i class="bx bx-right-arrow-alt" aria-hidden="true"></i>
+                                            </a>
+                                            <p class="resident-reminder-description">{{ r.descripcion|default:"Sin descripción." }}</p>
+                                        </div>
+                                        <span class="badge text-bg-light border resident-reminder-frequency">{{ r.get_frecuencia_display }}</span>
+
+                                        {% with fechas=r.fechas.all %}
+                                            {% if fechas %}
+                                                <ul class="resident-reminder-dates">
+                                                    {% for f in fechas %}
+                                                        <li>
+                                                            <span class="resident-reminder-date">
+                                                                <i class="bx bx-calendar" aria-hidden="true"></i>
+                                                                {{ f.fecha_hora|date:"d/m/Y H:i" }}
+                                                            </span>
+                                                            {% if f.cumplido %}
+                                                                <span class="badge text-bg-success">Cumplido</span>
+                                                            {% else %}
+                                                                <span class="badge text-bg-warning">Pendiente</span>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <p class="resident-reminder-no-dates">Sin fechas programadas</p>
+                                            {% endif %}
+                                        {% endwith %}
+                                    </article>
+                                {% empty %}
+                                    <p class="resident-empty-state mb-0">Este residente todavía no tiene recordatorios.</p>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% empty %}
+                        <div class="empty-state" role="status">
+                            <span class="empty-state-mark" aria-hidden="true"></span>
+                            <span>Aún no tienes residentes asignados.</span>
+                        </div>
+                    {% endfor %}
+                </div>
             </section>
         </div>
-
-        <!--? deberiamos de mover a un apartado aparte -->
-        <div class="col-lg-5 d-none">
-            <aside class="account-panel h-100" aria-labelledby="account-title">
-                <div class="account-panel-heading d-flex justify-content-between">
-                    <span class="account-avatar" aria-hidden="true">{{ datUsu.first_name|first|upper|default:"R" }}</span>
-                    <div class="d-block flex-row-reverse align-items-center justify-content-between">
-                        <p class="section-label">
-                            
-                        </p>
-
-                        <h2 id="account-title">Datos de la cuenta</h2>
-                    </div>
-                </div>
-                <dl class="account-details">
-                    <div>
-                        <dt>Nombre</dt>
-                        <dd>{{ datUsu.full_name|default:request.user.rut }}</dd>
-                    </div>
-                    <div>
-                        <dt>RUT</dt>
-                        <dd>{{ datUsu.rut }}</dd>
-                    </div>
-                    <div>
-                        <dt>Correo</dt>
-                        <dd>{{ datUsu.email|default:"Sin correo registrado" }}</dd>
-                    </div>
-                    <div>
-                        <dt>Rol</dt>
-                        <dd>{{ datUsu.rol|default:"Sin asignar" }}</dd>
-                    </div>
-                </dl>
-            </aside>
-        </div>
     </div>
+{% else %}
+    <div class="empty-state" role="status">
+        <span class="empty-state-mark" aria-hidden="true"></span>
+        <span>Aún no se te ha asignado un rol.</span>
+    </div>
+{% endif %}
+
 {% endblock %}

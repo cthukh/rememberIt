@@ -4,25 +4,16 @@ from django.db.models import Count, Q
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from .forms import IniciarSesionFuncionario, ActuaFuncionarioForm
 from .models import Funcionario
+from administracion.forms import ActualizarFuncionarioForm
+from .forms import IniciarSesionFuncionario
 
 def base(request):
     return render(request,"base.html")
 
 @login_required
 def inicio(request):
-    residentes = (
-        Residente.objects
-        .filter(funcionario=request.user)
-        .annotate(
-            pendientes=Count(
-                'recordatorios__fechas',
-                filter=Q(recordatorios__fechas__cumplido=False),
-            )
-        )
-        .order_by('primer_nombre')
-    )
+    residentes = Residente.objects.filter(funcionario=request.user)
     return render(request, "inicio_funcionario.html", {
         "datUsu": request.user,
         "residentes": residentes,
@@ -54,5 +45,18 @@ def cerrarSesion(request):
 @login_required
 def perfil(request,uuid):
     user = get_object_or_404(Funcionario, uuid=uuid)
-    form = ActuaFuncionarioForm(instance=user)
-    return render(request, "perfil_funcionario.html", {"user": user, "form": form,"uuid":uuid})
+    form = ActualizarFuncionarioForm(instance=user)
+    # Si no es superusuario, todo en solo lectura
+    if request.user is not None and not request.user.is_superuser:
+        for field in form.fields.values():
+            field.disabled = True
+
+    return render(
+        request, 
+        "perfil_funcionario.html", 
+        {
+            "user": user, 
+            "form": form,
+            "uuid": uuid,
+        }
+    )
