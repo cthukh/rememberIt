@@ -24,6 +24,11 @@ urlpatterns = [
     
     path('cerrarSesion/', views.cerrarSesion, name='cerrar_sesion'),
     path('perfil/<str:username>',views.perfil,name="perfil"),
-    path('agregarNumero/<str:username>', views.modificarFuncionario, name="agregarNumero")
+    path('agregarNumero/<str:username>', views.modificarFuncionario, name="agregarNumero"),
+    
+    path('bitacora/', views.bitacora),
+    path('pizarra/',views.pizarra),
+    path('visitas/', views.visitas, name="visitas"),
+    path('recepcion/',views.recepcion,name="recepcion"),
 
 ]

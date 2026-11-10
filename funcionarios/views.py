@@ -14,6 +14,20 @@ from core.validators import normalizar_rut
 
 def base(request):
     return render(request,"base.html")
+@login_required
+def bitacora(request):
+    return render(request,"bitacora.html")
+@login_required
+def pizarra(request):
+    return render(request,"pizarra.html")
+
+@login_required
+def visitas(request):
+    return render(request, "agendaVisitas.html")
+
+@login_required
+def recepcion(request):
+    return render(request, "recepcion.html")
 
 @login_required
 def inicio(request):
@@ -154,3 +168,5 @@ def modificarFuncionario(request, username):
         return redirect("funcionario:perfil", username=username)
 
     return render(request, "perfil.html", {"funcionario": funcionario, "form": form})
+
+
