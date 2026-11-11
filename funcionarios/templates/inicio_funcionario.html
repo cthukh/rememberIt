@@ -1,5 +1,4 @@
-<!-- Panel principal funcionario -->
-
+{# Panel principal funcionario #}
 {% extends "base.html" %}
 {% load static %}
 
@@ -14,7 +13,7 @@
 {% endblock %}
 
 {% block nav_links %}
-    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">    <!-- active -->
+    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">
         Inicio
     </a>
     <a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
@@ -26,7 +25,7 @@
         </a>
     {% endif %}
     <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
-        Mi perfil 
+        Mi perfil
     </a>
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
@@ -39,54 +38,162 @@
     </section>
 
     <div class="row g-4 dashboard-grid">
-        <div>
+        <div class="col-12">
             <section class="welcome-panel h-100" aria-labelledby="reminders-title">
                 <p class="section-label">Organización diaria</p>
                 <h2 id="reminders-title">Recordatorios del hogar</h2>
-                <p class="panel-copy">Tus recordatorios aparecerán aquí para que puedas tener a mano las actividades importantes del hogar.</p>
-                <div class="empty-state" role="status">
-                    <span class="empty-state-mark" aria-hidden="true"></span>
-                    <span>Aún no hay recordatorios registrados.</span>
-                </div>
+                <p class="panel-copy">Tus recordatorios de hoy, organizados por residente.</p>
 
+                <div class="accordion reminders-accordion" id="residentesAccordion">
+                    {% for residente in residentes %}
+                        <div class="accordion-item reminders-item">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button reminders-toggle {% if not forloop.first %}collapsed{% endif %}"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#residente-{{ forloop.counter }}"
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                        aria-controls="residente-{{ forloop.counter }}">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    <span class="flex-grow-1">{{ residente.primer_nombre }}</span>
+                                    {% if residente.pendientes %}
+                                        <span class="reminders-badge">{{ residente.pendientes }} pendiente{{ residente.pendientes|pluralize }}</span>
+                                    {% else %}
+                                        <span class="reminders-badge reminders-badge--ok"><i class="bi bi-check2"></i> Al día</span>
+                                    {% endif %}
+                                </button>
+                            </h3>
+
+                            <div id="residente-{{ forloop.counter }}"
+                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                 data-bs-parent="#residentesAccordion">
+                                <div class="accordion-body reminders-body">
+                                    {% for recordatorio in residente.recordatorios.all %}
+                                        <article class="recordatorio-item reminder-card border rounded p-3 mb-3 shadow-sm bg-white">
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <h4 class="reminder-title mb-0">{{ recordatorio.nombre }}</h4>
+                                                <span class="reminder-freq">{{ recordatorio.get_frecuencia_display }}</span>
+                                            </div>
+
+                                            <p class="reminder-desc">{{ recordatorio.descripcion }}</p>
+
+                                            <div class="reminder-times">
+                                                {% for fecha in recordatorio.fechas.all %}
+                                                    <div class="time-slot">
+                                                        <span class="time-chip {% if fecha.cumplido %}time-chip--done{% endif %}">
+                                                            <i class="bi {% if fecha.cumplido %}bi-check-circle-fill{% else %}bi-clock{% endif %}"></i>
+                                                            {{ fecha.fecha_hora|date:"H:i" }}
+                                                        </span>
+
+                                                        {% if not fecha.cumplido %}
+                                                            <button type="button"
+                                                                    class="btn btn-success btn-sm"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modalCumplido"
+                                                                    data-url="{% url 'recordatorios:marcar_cumplido' fecha.id %}"
+                                                                    data-nombre="{{ recordatorio.nombre }}"
+                                                                    data-hora="{{ fecha.fecha_hora|date:'H:i' }}">
+                                                                <i class="bi bi-check2"></i> Realizado
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+
+                                            {# Botones abajo #}
+                                            <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                                                <a href="{% url 'recordatorios:mod_recordatorio' recordatorio.uuid %}"
+                                                class="btn btn-outline-secondary btn-sm flex-fill">
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </a>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-sm flex-fill"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEliminar"
+                                                        data-url="{% url 'recordatorios:eliminar_recordatorio' recordatorio.uuid %}"
+                                                        data-nombre="{{ recordatorio.nombre }}">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </div>
+                                        </article>
+                                    {% empty %}
+                                        <div class="empty-state" role="status">
+                                            <span class="empty-state-mark" aria-hidden="true"></span>
+                                            <span>No hay recordatorios para hoy.</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="empty-state" role="status">
+                            <span class="empty-state-mark" aria-hidden="true"></span>
+                            <span>No tienes residentes asignados.</span>
+                        </div>
+                    {% endfor %}
+                </div>
                 <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
                     <i class="bi bi-people"></i> Ver residentes
                 </a>
             </section>
         </div>
 
-        <!--? deberiamos de mover a un apartado aparte -->
-        <div class="col-lg-5 d-none">
-            <aside class="account-panel h-100" aria-labelledby="account-title">
-                <div class="account-panel-heading d-flex justify-content-between">
-                    <span class="account-avatar" aria-hidden="true">{{ datUsu.first_name|first|upper|default:"R" }}</span>
-                    <div class="d-block flex-row-reverse align-items-center justify-content-between">
-                        <p class="section-label">
-                            
-                        </p>
-
-                        <h2 id="account-title">Datos de la cuenta</h2>
+    <div class="modal fade" id="modalCumplido" tabindex="-1" aria-labelledby="modalCumplidoTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" id="formCumplido">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCumplidoTitulo">Confirmar actividad</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                </div>
-                <dl class="account-details">
-                    <div>
-                        <dt>Nombre</dt>
-                        <dd>{{ datUsu.full_name|default:request.user.rut }}</dd>
+                    <div class="modal-body">
+                        ¿Marcar <strong id="cumplidoNombre"></strong> de las
+                        <strong id="cumplidoHora"></strong> como realizado?
                     </div>
-                    <div>
-                        <dt>RUT</dt>
-                        <dd>{{ datUsu.rut }}</dd>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn boton-primario">Sí, realizado</button>
                     </div>
-                    <div>
-                        <dt>Correo</dt>
-                        <dd>{{ datUsu.email|default:"Sin correo registrado" }}</dd>
-                    </div>
-                    <div>
-                        <dt>Rol</dt>
-                        <dd>{{ datUsu.rol|default:"Sin asignar" }}</dd>
-                    </div>
-                </dl>
-            </aside>
+                </form>
+            </div>
         </div>
     </div>
+
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" id="formEliminar">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEliminarTitulo">Eliminar recordatorio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Seguro que quieres eliminar <strong id="eliminarNombre"></strong>?
+                        Se borrarán también todas sus horas registradas.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('modalCumplido').addEventListener('show.bs.modal', e => {
+            const btn = e.relatedTarget;
+            document.getElementById('formCumplido').action = btn.dataset.url;
+            document.getElementById('cumplidoNombre').textContent = btn.dataset.nombre;
+            document.getElementById('cumplidoHora').textContent = btn.dataset.hora;
+        });
+
+        document.getElementById('modalEliminar').addEventListener('show.bs.modal', e => {
+            const btn = e.relatedTarget;
+            document.getElementById('formEliminar').action = btn.dataset.url;
+            document.getElementById('eliminarNombre').textContent = btn.dataset.nombre;
+        });
+    </script>
 {% endblock %}

@@ -3,6 +3,7 @@ from residentes.models import Residente
 import uuid
 
 
+
 class Recordatorio(models.Model):
 
     FRECUENCIA_CHOICES = [
@@ -10,13 +11,15 @@ class Recordatorio(models.Model):
         ("DIARIA", "Diaria"),
         ("SEMANAL", "Semanal"),
         ("MENSUAL", "Mensual"),
+        ("INDEFINIDO", "Indefinido")
     ]
 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     nombre = models.CharField(max_length=30)
     descripcion = models.TextField()
     frecuencia = models.CharField(max_length=10, choices=FRECUENCIA_CHOICES, default="UNA")
-    fecha_inicio = models.DateTimeField()
+    indefinido = models.BooleanField(default=False)
+    fecha_inicio = models.DateTimeField(null=True, blank=True)
     fecha_fin = models.DateTimeField(null=True, blank=True)
 
     residente = models.ForeignKey(

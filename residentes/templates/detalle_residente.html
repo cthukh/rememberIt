@@ -86,13 +86,14 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h5 class="fw-semibold mb-3 d-flex justify-content-between">
-                        Recordatorios 
+                        Recordatorios
                         <a href="{% url 'recordatorios:crear_recordatorio' residente.uuid %}" class="btn btn-outline-primary btn-sm">
                             <i class='bx bxs-bell-ring'></i>
                             Nuevo
                         </a>
                     </h5>
 
+                    {# Lista compacta, sin las 30 fechas #}
                     {% for r in residente.recordatorios.all %}
                         <div class="border rounded p-3 mb-3">
                             <div class="d-flex justify-content-between align-items-start">
@@ -102,28 +103,56 @@
                                 </div>
                                 <span class="badge text-bg-light border">{{ r.get_frecuencia_display }}</span>
                             </div>
-
-                            <ul class="list-unstyled mt-3 mb-0 small">
-                                {% for f in r.fechas.all %}
-                                    <li class="d-flex justify-content-between align-items-center py-1">
-                                        <span><i class="bi bi-calendar-event text-muted"></i> {{ f.fecha_hora|date:"d/m/Y H:i" }}</span>
-                                        {% if f.cumplido %}
-                                            <span class="badge text-bg-success">Cumplido</span>
-                                        {% else %}
-                                            <span class="badge text-bg-warning">Pendiente</span>
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
                         </div>
                     {% empty %}
                         <p class="text-muted mb-0">Este residente no tiene recordatorios.</p>
                     {% endfor %}
+
+                    {# Calendario #}
+                    {% if residente.recordatorios.all %}
+                        <div id="calendario" class="mt-3"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
     </div>
 </div>
+
+{% if residente.recordatorios.all %}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.15/locales/es.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const el = document.getElementById('calendario');
+            const esMovil = () => window.innerWidth < 576;
+
+            const calendario = new FullCalendar.Calendar(el, {
+                initialView: esMovil() ? 'listWeek' : 'dayGridMonth',
+                locale: 'es',
+                firstDay: 1,
+                height: 'auto',
+                contentHeight: 'auto',
+                aspectRatio: 1.1,
+                displayEventTime: false,
+                eventDisplay: 'list-item',  
+                dayMaxEvents: 2,   
+                moreLinkText: n => `+${n}`,
+                headerToolbar: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'today'
+                },
+                buttonText: { today: 'Hoy', month: 'Mes', list: 'Agenda' },
+                events: "{% url 'recordatorios:eventos_calendario' residente.uuid %}",
+
+                windowResize: () => {
+                    calendario.changeView(esMovil() ? 'listWeek' : 'dayGridMonth');
+                },
+            });
+            calendario.render();
+        });
+</script>
+{% endif %}
 
 {% endblock %}
