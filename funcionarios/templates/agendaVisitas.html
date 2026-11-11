@@ -1,0 +1,148 @@
+<!-- Agenda de visitas de los residentes -->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Visitas{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'agendaVisitas.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block link_logo %}
+    {% url 'funcionario:funcionario' %}
+{% endblock %}
+
+{% block nav_links %}
+    {% if request.user.is_authenticated %}
+        <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
+        <a class="nav-link" href="{% url 'funcionario:funcionario' %}">Inicio</a>
+        <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+    {% else %}
+        <a class="nav-link" href="{% url 'funcionario:iniciar_sesion' %}">Iniciar sesión</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <section class="visitas-heading" aria-labelledby="visitas-title">
+        <p class="eyebrow">Coordinación</p>
+        <h1 id="visitas-title">Agenda de visitas</h1>
+        <p>Agenda la visita de un familiar y evita aglomeraciones en la residencia.</p>
+    </section>
+
+    <div class="row g-4">
+
+        <!-- Formulario y cupos -->
+        <div class="col-lg-5">
+            <section class="form-panel" aria-labelledby="form-title">
+                <p class="section-label">Nueva visita</p>
+                <h2 id="form-title">Agendar una visita</h2>
+
+                <div id="mensaje" class="mensaje" role="alert" hidden></div>
+
+                <form id="form-visita" novalidate>
+                    <div class="mb-3">
+                        <label for="visita-residente" class="form-label">Residente</label>
+                        <select id="visita-residente" class="form-select">
+                            <option value="">Selecciona un residente</option>
+                            <option value="Rosa Muñoz">Rosa Muñoz</option>
+                            <option value="Luis Soto">Luis Soto</option>
+                            <option value="Marta Vega">Marta Vega</option>
+                        </select>
+                        <div class="invalid-feedback">Selecciona un residente.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visita-nombre" class="form-label">Nombre completo del visitante</label>
+                        <input type="text" id="visita-nombre" class="form-control" maxlength="80" placeholder="Ej: Ana Pérez Rojas">
+                        <div class="invalid-feedback">Escribe el nombre completo (nombre y apellido).</div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-6">
+                            <label for="visita-rut" class="form-label">RUT</label>
+                            <input type="text" id="visita-rut" class="form-control" maxlength="12" placeholder="12.345.678-5">
+                            <div class="invalid-feedback">Ingresa un RUT válido.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="visita-telefono" class="form-label">Teléfono</label>
+                            <input type="tel" id="visita-telefono" class="form-control" maxlength="15" placeholder="+56 9 1234 5678">
+                            <div class="invalid-feedback">Ingresa un teléfono válido.</div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="visita-parentesco" class="form-label">Parentesco / Tipo de visita</label>
+                        <select id="visita-parentesco" class="form-select">
+                            <option value="">Selecciona una opción</option>
+                            <option value="Hijo/a">Hijo/a</option>
+                            <option value="Cónyuge">Cónyuge</option>
+                            <option value="Nieto/a">Nieto/a</option>
+                            <option value="Hermano/a">Hermano/a</option>
+                            <option value="Otro familiar">Otro familiar</option>
+                            <option value="Amistad">Amistad</option>
+                            <option value="Visita profesional">Visita profesional</option>
+                        </select>
+                        <div class="invalid-feedback">Selecciona el parentesco o tipo de visita.</div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <label for="visita-fecha" class="form-label">Fecha</label>
+                            <input type="date" id="visita-fecha" class="form-control">
+                            <div class="invalid-feedback">Elige una fecha desde hoy en adelante.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="visita-bloque" class="form-label">Bloque horario</label>
+                            <select id="visita-bloque" class="form-select"></select>
+                            <div class="invalid-feedback">Selecciona un bloque con cupos.</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-agendar w-100">Agendar visita</button>
+                </form>
+            </section>
+
+            <!-- Cupos por bloque -->
+            <section class="cupos-panel" aria-labelledby="cupos-title">
+                <h2 id="cupos-title">Cupos del <span id="cupos-fecha"></span></h2>
+                <p class="cupos-ayuda">Máximo <strong id="limite-texto"></strong> visitas al mismo tiempo en cada bloque.</p>
+                <ul class="cupos" id="lista-cupos"></ul>
+            </section>
+        </div>
+
+        <!-- Agenda -->
+        <div class="col-lg-7">
+            <section class="agenda-panel" aria-labelledby="agenda-title">
+                <div class="agenda-top">
+                    <div>
+                        <p class="section-label">Agenda</p>
+                        <h2 id="agenda-title">Visitas agendadas</h2>
+                    </div>
+                    <span class="agenda-contador" id="contador-visitas" aria-live="polite">0 visitas</span>
+                </div>
+
+                <div class="agenda-filtro">
+                    <label for="filtro-residente" class="form-label">Ver agenda de</label>
+                    <select id="filtro-residente" class="form-select">
+                        <option value="">Todos los residentes</option>
+                        <option value="Rosa Muñoz">Rosa Muñoz</option>
+                        <option value="Luis Soto">Luis Soto</option>
+                        <option value="Marta Vega">Marta Vega</option>
+                    </select>
+                </div>
+
+                <ol class="agenda" id="lista-agenda"></ol>
+
+                <div id="sin-visitas" class="empty-state" role="status" hidden>
+                    <span class="empty-state-mark" aria-hidden="true"></span>
+                    <span>No hay visitas agendadas para este residente.</span>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/agendaVisitas.js' %}"></script>
+{% endblock %}

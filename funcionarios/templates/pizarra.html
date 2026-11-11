@@ -1,0 +1,150 @@
+<!-- Pizarra digital: avisos generales para el equipo -->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pizarra{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'pizarra.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block link_logo %}
+    {% url 'funcionario:funcionario' %}
+{% endblock %}
+
+{% block nav_links %}
+    {% if request.user.is_authenticated %}
+        <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
+        <a class="nav-link" href="{% url 'funcionario:funcionario' %}">Inicio</a>
+        <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+    {% else %}
+        <a class="nav-link" href="{% url 'funcionario:iniciar_sesion' %}">Iniciar sesión</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <section class="pizarra-heading" aria-labelledby="pizarra-title">
+        <p class="eyebrow">Comunicación del equipo</p>
+        <h1 id="pizarra-title">Pizarra digital</h1>
+        <p>Publica avisos generales para que todo el equipo esté al tanto.</p>
+    </section>
+
+    <div class="row g-4">
+
+        <!-- Formulario -->
+        <div class="col-lg-5">
+            <section class="form-panel" aria-labelledby="form-title">
+                <p class="section-label">Nuevo aviso</p>
+                <h2 id="form-title">Publicar un aviso</h2>
+
+                <form id="form-aviso" novalidate>
+                    <div class="mb-3">
+                        <label for="aviso-titulo" class="form-label">Título</label>
+                        <input type="text" id="aviso-titulo" class="form-control" maxlength="60" placeholder="Ej: Reunión de personal">
+                        <div class="invalid-feedback">Escribe un título para el aviso.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="aviso-mensaje" class="form-label">Mensaje</label>
+                        <textarea id="aviso-mensaje" class="form-control" rows="4" maxlength="250" placeholder="Ej: Hoy a las 15:00 hrs en la sala común."></textarea>
+                        <div class="form-text"><span id="contador-mensaje">0</span> / 250 caracteres</div>
+                        <div class="invalid-feedback">Escribe el mensaje del aviso.</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="aviso-vigencia" class="form-label">Tiempo de vigencia</label>
+                        <select id="aviso-vigencia" class="form-select">
+                            <option value="1">1 hora</option>
+                            <option value="4">4 horas</option>
+                            <option value="12">12 horas</option>
+                            <option value="24" selected>1 día</option>
+                            <option value="72">3 días</option>
+                            <option value="168">1 semana</option>
+                        </select>
+                        <div class="form-text">Pasado este tiempo, el aviso deja de mostrarse solo.</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-publicar w-100">Publicar aviso</button>
+                </form>
+            </section>
+        </div>
+
+        <!-- Pizarra -->
+        <div class="col-lg-7">
+            <section class="pizarra-panel" aria-labelledby="activos-title">
+                <div class="pizarra-top">
+                    <div>
+                        <p class="section-label">Dashboard</p>
+                        <h2 id="activos-title">Avisos activos</h2>
+                    </div>
+                    <span class="pizarra-contador" id="contador-activos" aria-live="polite">0 avisos</span>
+                </div>
+
+                <ul class="avisos" id="lista-activos">
+
+                    <li class="aviso" data-vence-horas="5">
+                        <span class="aviso-chincheta" aria-hidden="true"></span>
+                        <h3 class="aviso-titulo">Reunión de personal</h3>
+                        <p class="aviso-mensaje">Hoy a las 15:00 hrs en la sala común. Asistencia de todo el equipo.</p>
+                        <p class="aviso-meta">
+                            <span class="aviso-autor">Publicado por Dirección</span>
+                            <span class="aviso-vence"></span>
+                        </p>
+                        <div class="aviso-acciones">
+                            <button type="button" class="btn-aviso btn-desactivar">Desactivar</button>
+                            <button type="button" class="btn-aviso btn-eliminar">Eliminar</button>
+                        </div>
+                    </li>
+
+                    <li class="aviso" data-vence-horas="48">
+                        <span class="aviso-chincheta" aria-hidden="true"></span>
+                        <h3 class="aviso-titulo">Cuidado con insumos</h3>
+                        <p class="aviso-mensaje">Quedan pocos guantes y mascarillas. Úsalos solo cuando sea necesario hasta la próxima compra.</p>
+                        <p class="aviso-meta">
+                            <span class="aviso-autor">Publicado por Administración</span>
+                            <span class="aviso-vence"></span>
+                        </p>
+                        <div class="aviso-acciones">
+                            <button type="button" class="btn-aviso btn-desactivar">Desactivar</button>
+                            <button type="button" class="btn-aviso btn-eliminar">Eliminar</button>
+                        </div>
+                    </li>
+
+                </ul>
+
+                <div id="sin-activos" class="empty-state" role="status" hidden>
+                    <span class="empty-state-mark" aria-hidden="true"></span>
+                    <span>No hay avisos activos en este momento.</span>
+                </div>
+            </section>
+
+            <section class="inactivos-panel" aria-labelledby="inactivos-title">
+                <h2 id="inactivos-title">Avisos desactivados o vencidos</h2>
+                <ul class="avisos-inactivos" id="lista-inactivos"></ul>
+                <p id="sin-inactivos" class="inactivos-vacio">No hay avisos desactivados.</p>
+            </section>
+        </div>
+    </div>
+
+    <!-- Plantilla para los avisos nuevos (la usa el JS) -->
+    <template id="plantilla-aviso">
+        <li class="aviso">
+            <span class="aviso-chincheta" aria-hidden="true"></span>
+            <h3 class="aviso-titulo"></h3>
+            <p class="aviso-mensaje"></p>
+            <p class="aviso-meta">
+                <span class="aviso-autor">Publicado por ti</span>
+                <span class="aviso-vence"></span>
+            </p>
+            <div class="aviso-acciones">
+                <button type="button" class="btn-aviso btn-desactivar">Desactivar</button>
+                <button type="button" class="btn-aviso btn-eliminar">Eliminar</button>
+            </div>
+        </li>
+    </template>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/pizarra.js' %}"></script>
+{% endblock %}

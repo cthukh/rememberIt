@@ -1,0 +1,245 @@
+<!-- Bitácora: historial de notas e incidentes -->
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bitácora{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'bitacora.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block link_logo %}
+    {% url 'funcionario:funcionario' %}
+{% endblock %}
+
+{% block nav_links %}
+    {% if request.user.is_authenticated %}
+        <span class="navbar-text me-lg-3">{{ request.user.first_name|default:request.user.rut }}</span>
+        <a class="nav-link" href="{% url 'funcionario:funcionario' %}">Inicio</a>
+        <a class="nav-link" href="{% url 'funcionario:cerrar_sesion' %}">Cerrar sesión</a>
+    {% else %}
+        <a class="nav-link" href="{% url 'funcionario:iniciar_sesion' %}">Iniciar sesión</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <section class="bitacora-heading" aria-labelledby="bitacora-title">
+        <p class="eyebrow">Seguimiento</p>
+        <h1 id="bitacora-title">Bitácora de notas e incidentes</h1>
+        <p>Ponte al día al iniciar tu turno o revisa cómo ha evolucionado un residente.</p>
+    </section>
+
+    <!-- Resumen -->
+    <section class="resumen row g-3" aria-label="Resumen de registros">
+        <div class="col-6 col-lg-3">
+            <div class="resumen-card">
+                <span class="resumen-numero" id="res-total">0</span>
+                <span class="resumen-texto">Registros</span>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="resumen-card resumen-nota">
+                <span class="resumen-numero" id="res-notas">0</span>
+                <span class="resumen-texto">Notas de turno</span>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="resumen-card resumen-incidente">
+                <span class="resumen-numero" id="res-incidentes">0</span>
+                <span class="resumen-texto">Incidentes</span>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="resumen-card resumen-grave">
+                <span class="resumen-numero" id="res-graves">0</span>
+                <span class="resumen-texto">Incidentes graves</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="filtros-panel" aria-labelledby="filtros-title">
+        <h2 id="filtros-title" class="section-label">Filtrar registros</h2>
+
+        <form id="form-filtros" class="row g-3">
+            <div class="col-md-6 col-lg-3">
+                <label for="filtro-residente" class="form-label">Residente</label>
+                <select id="filtro-residente" class="form-select">
+                    <option value="">Todos los residentes</option>
+                    <option value="Rosa Muñoz">Rosa Muñoz</option>
+                    <option value="Luis Soto">Luis Soto</option>
+                    <option value="Marta Vega">Marta Vega</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <label for="filtro-tipo" class="form-label">Tipo de registro</label>
+                <select id="filtro-tipo" class="form-select">
+                    <option value="">Notas e incidentes</option>
+                    <option value="nota">Notas de turno</option>
+                    <option value="incidente">Incidentes</option>
+                </select>
+            </div>
+
+            <div class="col-md-6 col-lg-2">
+                <label for="filtro-desde" class="form-label">Desde</label>
+                <input type="date" id="filtro-desde" class="form-control">
+            </div>
+
+            <div class="col-md-6 col-lg-2">
+                <label for="filtro-hasta" class="form-label">Hasta</label>
+                <input type="date" id="filtro-hasta" class="form-control">
+            </div>
+
+            <div class="col-12 col-lg-2 d-flex align-items-end">
+                <button type="button" id="btn-limpiar" class="btn btn-limpiar w-100">Limpiar filtros</button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Leyenda y contador -->
+    <div class="barra-info">
+        <ul class="leyenda" aria-label="Niveles de gravedad">
+            <li><span class="gravedad gravedad-leve">Leve</span></li>
+            <li><span class="gravedad gravedad-moderado">Moderado</span></li>
+            <li><span class="gravedad gravedad-grave">Grave</span></li>
+        </ul>
+        <p id="contador" class="contador" aria-live="polite"></p>
+    </div>
+
+    <!-- Línea de tiempo -->
+    <section aria-labelledby="timeline-title">
+        <h2 id="timeline-title" class="visually-hidden">Línea de tiempo</h2>
+
+        <ol class="timeline" id="timeline">
+
+            <li class="registro registro-incidente incidente-grave" data-tipo="incidente" data-gravedad="grave" data-residente="Luis Soto" data-fecha="2026-11-09">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">LS</span>
+                        <div class="registro-quien">
+                            <strong>Luis Soto</strong>
+                            <span>09/11/2026 · 07:40</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-incidente">Incidente</span>
+                            <span class="gravedad gravedad-grave">Grave</span>
+                        </div>
+                    </header>
+                    <h3>Caída en el baño</h3>
+                    <p class="registro-texto">Se resbaló al salir de la ducha. Presenta dolor en la cadera derecha. Se avisó al médico y a la familia.</p>
+                    <p class="registro-autor">Registrado por Camila Rojas · Enfermera</p>
+                </article>
+            </li>
+
+            <li class="registro registro-nota" data-tipo="nota" data-gravedad="" data-residente="Rosa Muñoz" data-fecha="2026-11-08">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">RM</span>
+                        <div class="registro-quien">
+                            <strong>Rosa Muñoz</strong>
+                            <span>08/11/2026 · 23:00</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-nota">Nota de turno</span>
+                        </div>
+                    </header>
+                    <h3>Turno de noche tranquilo</h3>
+                    <p class="registro-texto">Durmió toda la noche sin problemas. Tomó sus medicamentos de la noche sin dificultad.</p>
+                    <p class="registro-autor">Registrado por Pedro Díaz · Técnico</p>
+                </article>
+            </li>
+
+            <li class="registro registro-incidente incidente-moderado" data-tipo="incidente" data-gravedad="moderado" data-residente="Marta Vega" data-fecha="2026-11-07">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">MV</span>
+                        <div class="registro-quien">
+                            <strong>Marta Vega</strong>
+                            <span>07/11/2026 · 14:15</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-incidente">Incidente</span>
+                            <span class="gravedad gravedad-moderado">Moderado</span>
+                        </div>
+                    </header>
+                    <h3>Rechazo de medicamento</h3>
+                    <p class="registro-texto">Se negó a tomar el medicamento de la tarde. Se intentó nuevamente a los 30 minutos y lo aceptó.</p>
+                    <p class="registro-autor">Registrado por Camila Rojas · Enfermera</p>
+                </article>
+            </li>
+
+            <li class="registro registro-nota" data-tipo="nota" data-gravedad="" data-residente="Luis Soto" data-fecha="2026-11-05">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">LS</span>
+                        <div class="registro-quien">
+                            <strong>Luis Soto</strong>
+                            <span>05/11/2026 · 10:30</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-nota">Nota de turno</span>
+                        </div>
+                    </header>
+                    <h3>Buen ánimo durante la mañana</h3>
+                    <p class="registro-texto">Participó en la actividad de música y comió todo su desayuno.</p>
+                    <p class="registro-autor">Registrado por Pedro Díaz · Técnico</p>
+                </article>
+            </li>
+
+            <li class="registro registro-incidente incidente-leve" data-tipo="incidente" data-gravedad="leve" data-residente="Rosa Muñoz" data-fecha="2026-11-03">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">RM</span>
+                        <div class="registro-quien">
+                            <strong>Rosa Muñoz</strong>
+                            <span>03/11/2026 · 16:50</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-incidente">Incidente</span>
+                            <span class="gravedad gravedad-leve">Leve</span>
+                        </div>
+                    </header>
+                    <h3>Pequeño golpe en la mano</h3>
+                    <p class="registro-texto">Se golpeó la mano con la mesa. Solo un enrojecimiento, se aplicó frío y no requirió más atención.</p>
+                    <p class="registro-autor">Registrado por Pedro Díaz · Técnico</p>
+                </article>
+            </li>
+
+            <li class="registro registro-nota" data-tipo="nota" data-gravedad="" data-residente="Marta Vega" data-fecha="2026-10-30">
+                <span class="registro-punto" aria-hidden="true"></span>
+                <article class="registro-card">
+                    <header class="registro-top">
+                        <span class="avatar" aria-hidden="true">MV</span>
+                        <div class="registro-quien">
+                            <strong>Marta Vega</strong>
+                            <span>30/10/2026 · 17:00</span>
+                        </div>
+                        <div class="registro-etiquetas">
+                            <span class="tipo tipo-nota">Nota de turno</span>
+                        </div>
+                    </header>
+                    <h3>Visita de familiares</h3>
+                    <p class="registro-texto">Recibió la visita de su hija. Estuvo contenta y conversadora toda la tarde.</p>
+                    <p class="registro-autor">Registrado por Camila Rojas · Enfermera</p>
+                </article>
+            </li>
+
+        </ol>
+
+        <div id="sin-resultados" class="empty-state" role="status" hidden>
+            <span class="empty-state-mark" aria-hidden="true"></span>
+            <span>No hay registros con los filtros seleccionados.</span>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/bitacora.js' %}"></script>
+{% endblock %}
