@@ -40,10 +40,3 @@ class FuncionarioManager(BaseUserManager):
             raise ValueError("El superusuario debe tener is_superuser=True.")
 
         return self._create_user(rut, password, **extra_fields)
-    def obtener_por_username(self, username):
-        if not username:
-            return None
-
-        return self.get_queryset().select_related("rol").filter(
-        username=username
-        ).first()
