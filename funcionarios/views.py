@@ -14,10 +14,18 @@ def base(request):
 @login_required
 def inicio(request):
     residentes = Residente.objects.filter(funcionario=request.user)
-    return render(request, "inicio_funcionario.html", {
-        "datUsu": request.user,
-        "residentes": residentes,
-    })
+
+    if request.user.is_superuser == True:
+        return render(request, "inicio_funcionario.html", {
+            "datUsu": request.user,
+            "residentes": residentes,
+        })
+
+    else:
+        return render(request, "inicio_funcionario.html", {
+            "datUsu": request.user,
+            "residentes": residentes,
+        })
 
 
 def iniciarSesion(request):
