@@ -1,5 +1,4 @@
-<!-- Panel principal funcionario -->
-
+{# Panel principal funcionario #}
 {% extends "base.html" %}
 {% load static %}
 
@@ -14,7 +13,7 @@
 {% endblock %}
 
 {% block nav_links %}
-    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">    <!-- active -->
+    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">
         Inicio
     </a>
     <a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
@@ -26,7 +25,7 @@
         </a>
     {% endif %}
     <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
-        Mi perfil 
+        Mi perfil
     </a>
     <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
@@ -43,86 +42,160 @@
     <div class="row g-4 dashboard-grid">
         <div class="col-12">
             <section class="welcome-panel h-100" aria-labelledby="reminders-title">
-                <div class="reminders-heading">
-                    <div>
-                        <p class="section-label">Organización diaria</p>
-                        <h2 id="reminders-title">Recordatorios del hogar</h2>
-                        <p class="panel-copy">Actividades importantes de los residentes que tienes asignados.</p>
-                    </div>
-                    <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario reminders-action">
-                        <i class="bx bx-group" aria-hidden="true"></i>
-                        <span>Ver residentes</span>
-                    </a>
-                </div>
+                <p class="section-label">Organización diaria</p>
+                <h2 id="reminders-title">Recordatorios del hogar</h2>
+                <p class="panel-copy">Tus recordatorios de hoy, organizados por residente.</p>
 
-                <div class="resident-reminders-list">
+                <div class="accordion reminders-accordion" id="residentesAccordion">
                     {% for residente in residentes %}
-                        <section class="resident-reminders" aria-labelledby="resident-{{ residente.uuid }}">
-                            <div class="resident-reminders-heading">
-                                <h3 id="resident-{{ residente.uuid }}">
-                                    {{ residente.primer_nombre }} {{ residente.apellido_paterno }}
-                                </h3>
-                                <a href="{% url 'residentes:detalle_residente' residente.uuid %}"
-                                   class="btn btn-sm btn-outline-secondary resident-info-link">
-                                    <i class="bx bx-info-circle" aria-hidden="true"></i>
-                                    <span>Ver residente</span>
-                                </a>
-                            </div>
+                        <div class="accordion-item reminders-item">
+                            <h3 class="accordion-header">
+                                <button class="accordion-button reminders-toggle {% if not forloop.first %}collapsed{% endif %}"
+                                        type="button"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target="#residente-{{ forloop.counter }}"
+                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                                        aria-controls="residente-{{ forloop.counter }}">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    <span class="flex-grow-1">{{ residente.primer_nombre }}</span>
+                                    {% if residente.pendientes %}
+                                        <span class="reminders-badge">{{ residente.pendientes }} pendiente{{ residente.pendientes|pluralize }}</span>
+                                    {% else %}
+                                        <span class="reminders-badge reminders-badge--ok"><i class="bi bi-check2"></i> Al día</span>
+                                    {% endif %}
+                                </button>
+                            </h3>
 
-                            <div class="resident-reminder-list">
-                                {% for r in residente.recordatorios.all %}
-                                    <article class="resident-reminder">
-                                        <div class="resident-reminder-main">
-                                            <a href="{% url 'recordatorios:detalle_recordatorio' r.uuid %}" class="resident-reminder-link">
-                                                <span>{{ r.nombre }}</span>
-                                                <i class="bx bx-right-arrow-alt" aria-hidden="true"></i>
-                                            </a>
-                                            <p class="resident-reminder-description">{{ r.descripcion|default:"Sin descripción." }}</p>
+                            <div id="residente-{{ forloop.counter }}"
+                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                                 data-bs-parent="#residentesAccordion">
+                                <div class="accordion-body reminders-body">
+                                    {% for recordatorio in residente.recordatorios.all %}
+                                        <article class="recordatorio-item reminder-card border rounded p-3 mb-3 shadow-sm bg-white">
+                                            <div class="d-flex justify-content-between align-items-center gap-2">
+                                                <h4 class="reminder-title mb-0">{{ recordatorio.nombre }}</h4>
+                                                <span class="reminder-freq">{{ recordatorio.get_frecuencia_display }}</span>
+                                            </div>
+
+                                            <p class="reminder-desc">{{ recordatorio.descripcion }}</p>
+
+                                            <div class="reminder-times">
+                                                {% for fecha in recordatorio.fechas.all %}
+                                                    <div class="time-slot">
+                                                        <span class="time-chip {% if fecha.cumplido %}time-chip--done{% endif %}">
+                                                            <i class="bi {% if fecha.cumplido %}bi-check-circle-fill{% else %}bi-clock{% endif %}"></i>
+                                                            {{ fecha.fecha_hora|date:"H:i" }}
+                                                        </span>
+
+                                                        {% if not fecha.cumplido %}
+                                                            <button type="button"
+                                                                    class="btn btn-success btn-sm"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#modalCumplido"
+                                                                    data-url="{% url 'recordatorios:marcar_cumplido' fecha.id %}"
+                                                                    data-nombre="{{ recordatorio.nombre }}"
+                                                                    data-hora="{{ fecha.fecha_hora|date:'H:i' }}">
+                                                                <i class="bi bi-check2"></i> Realizado
+                                                            </button>
+                                                        {% endif %}
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+
+                                            {# Botones abajo #}
+                                            <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                                                <a href="{% url 'recordatorios:mod_recordatorio' recordatorio.uuid %}"
+                                                class="btn btn-outline-secondary btn-sm flex-fill">
+                                                    <i class="bi bi-pencil"></i> Editar
+                                                </a>
+                                                <button type="button"
+                                                        class="btn btn-outline-danger btn-sm flex-fill"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEliminar"
+                                                        data-url="{% url 'recordatorios:eliminar_recordatorio' recordatorio.uuid %}"
+                                                        data-nombre="{{ recordatorio.nombre }}">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </div>
+                                        </article>
+                                    {% empty %}
+                                        <div class="empty-state" role="status">
+                                            <span class="empty-state-mark" aria-hidden="true"></span>
+                                            <span>No hay recordatorios para hoy.</span>
                                         </div>
-                                        <span class="badge text-bg-light border resident-reminder-frequency">{{ r.get_frecuencia_display }}</span>
-
-                                        {% with fechas=r.fechas.all %}
-                                            {% if fechas %}
-                                                <ul class="resident-reminder-dates">
-                                                    {% for f in fechas %}
-                                                        <li>
-                                                            <span class="resident-reminder-date">
-                                                                <i class="bx bx-calendar" aria-hidden="true"></i>
-                                                                {{ f.fecha_hora|date:"d/m/Y H:i" }}
-                                                            </span>
-                                                            {% if f.cumplido %}
-                                                                <span class="badge text-bg-success">Cumplido</span>
-                                                            {% else %}
-                                                                <span class="badge text-bg-warning">Pendiente</span>
-                                                            {% endif %}
-                                                        </li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% else %}
-                                                <p class="resident-reminder-no-dates">Sin fechas programadas</p>
-                                            {% endif %}
-                                        {% endwith %}
-                                    </article>
-                                {% empty %}
-                                    <p class="resident-empty-state mb-0">Este residente todavía no tiene recordatorios.</p>
-                                {% endfor %}
+                                    {% endfor %}
+                                </div>
                             </div>
-                        </section>
+                        </div>
                     {% empty %}
                         <div class="empty-state" role="status">
                             <span class="empty-state-mark" aria-hidden="true"></span>
-                            <span>Aún no tienes residentes asignados.</span>
+                            <span>No tienes residentes asignados.</span>
                         </div>
                     {% endfor %}
                 </div>
+                <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
+                    <i class="bi bi-people"></i> Ver residentes
+                </a>
             </section>
         </div>
-    </div>
-{% else %}
-    <div class="empty-state" role="status">
-        <span class="empty-state-mark" aria-hidden="true"></span>
-        <span>Aún no se te ha asignado un rol.</span>
-    </div>
-{% endif %}
 
+    <div class="modal fade" id="modalCumplido" tabindex="-1" aria-labelledby="modalCumplidoTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" id="formCumplido">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalCumplidoTitulo">Confirmar actividad</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Marcar <strong id="cumplidoNombre"></strong> de las
+                        <strong id="cumplidoHora"></strong> como realizado?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn boton-primario">Sí, realizado</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalEliminar" tabindex="-1" aria-labelledby="modalEliminarTitulo" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form method="post" id="formEliminar">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalEliminarTitulo">Eliminar recordatorio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Seguro que quieres eliminar <strong id="eliminarNombre"></strong>?
+                        Se borrarán también todas sus horas registradas.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('modalCumplido').addEventListener('show.bs.modal', e => {
+            const btn = e.relatedTarget;
+            document.getElementById('formCumplido').action = btn.dataset.url;
+            document.getElementById('cumplidoNombre').textContent = btn.dataset.nombre;
+            document.getElementById('cumplidoHora').textContent = btn.dataset.hora;
+        });
+
+        document.getElementById('modalEliminar').addEventListener('show.bs.modal', e => {
+            const btn = e.relatedTarget;
+            document.getElementById('formEliminar').action = btn.dataset.url;
+            document.getElementById('eliminarNombre').textContent = btn.dataset.nombre;
+        });
+    </script>
 {% endblock %}

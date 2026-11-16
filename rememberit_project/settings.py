@@ -114,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LOGIN_URL = 'funcionarios:iniciar_sesion'
 LOGIN_REDIRECT_URL = "funcionarios:funcionario"
-LOGOUT_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'funcionarios:iniciar_sesion'
 
 
 

@@ -288,7 +288,7 @@
     .welcome-panel {
         min-height: auto;
     }
-
+    
     .reminders-heading {
         flex-direction: column;
         gap: 16px;
