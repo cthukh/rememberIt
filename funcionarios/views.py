@@ -68,5 +68,5 @@ def perfil(request,uuid):
     user = get_object_or_404(Funcionario, uuid=uuid)
     if user != request.user:
         return redirect("funcionarios:funcionario")
-    form = ActuaFuncionarioForm(instance=user)
+    form = ActualizarFuncionarioForm(instance=user)
     return render(request, "perfil_funcionario.html", {"user": user, "form": form,"uuid":uuid})
