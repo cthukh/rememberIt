@@ -1,7 +1,9 @@
 from django.db import models
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.hashers import make_password, check_password, identify_hasher
+import uuid
 
 class Familiar(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     rut = models.CharField(max_length=20, primary_key=True)
     primer_nombre = models.CharField(max_length=60)
     segundo_nombre = models.CharField(max_length=60, blank=True, null=True)
@@ -20,8 +22,11 @@ class Familiar(models.Model):
         return f"{self.primer_nombre} {self.apellido_paterno} (Familiar)"
 
     # Método opcional para encriptar la contraseña antes de guardarla
+
+
     def save(self, *args, **kwargs):
-        # Si la contraseña no está hasheada aún, la encriptamos
-        if not self.password.startswith('pbkdf2_'):
+        try:
+            identify_hasher(self.password)   # ya está hasheada
+        except ValueError:
             self.password = make_password(self.password)
         super().save(*args, **kwargs)

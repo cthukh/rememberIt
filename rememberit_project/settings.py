@@ -112,9 +112,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # REDIRECCIONAMIENTO
 
 
-LOGIN_URL = 'funcionarios:iniciar_sesion'
-LOGIN_REDIRECT_URL = "funcionarios:funcionario"
-LOGOUT_REDIRECT_URL = 'funcionarios:iniciar_sesion'
+LOGIN_URL = 'familiares:index'
+#LOGOUT_REDIRECT_URL = 'familiares:index'
 
 
 

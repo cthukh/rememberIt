@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Bienvenida{% endblock %}
+
+{% block link_logo %}{% url 'funcionarios:funcionario' %}{% endblock %}
+
+{% block nav_links %}
+    <a class="nav-link" href="{% url 'funcionarios:iniciar_sesion' %}">Acceso para funcionarios</a>
+{% endblock %}
+
+{% block content %}
+<section class="row align-items-center justify-content-between g-5 py-4 py-lg-5" aria-labelledby="welcome-title">
+    <div class="col-lg-6">
+        <p class="text-uppercase small fw-semibold mb-3" style="letter-spacing: .12em; color: var(--principal-logo);">
+            Acompañamiento cercano y organizado
+        </p>
+
+        <h1 id="welcome-title" class="display-5 fw-bold mb-4" style="line-height: 1.08;">
+            Todo lo importante, siempre a tiempo.
+        </h1>
+
+        <p class="lead mb-4" style="max-width: 620px; color: var(--primary);">
+            RememberIt centraliza la información de los residentes, los recordatorios y las tareas del equipo
+            para brindar una atención diaria más clara, segura y humana.
+        </p>
+
+        <div class="d-flex flex-wrap gap-3">
+            <span class="d-inline-flex align-items-center gap-2 text-secondary small">
+                <i class="bi bi-shield-check fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+                Información organizada
+            </span>
+            <span class="d-inline-flex align-items-center gap-2 text-secondary small">
+                <i class="bi bi-bell fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+                Recordatorios claros
+            </span>
+            <span class="d-inline-flex align-items-center gap-2 text-secondary small">
+                <i class="bi bi-people fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+                Comunicación entre roles
+            </span>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-4 p-md-5">
+                <p class="text-uppercase small fw-semibold mb-2" style="letter-spacing: .12em; color: var(--principal-logo);">
+                    Selecciona tu perfil
+                </p>
+                <h2 class="h4 fw-bold mb-4">¿Cómo deseas ingresar?</h2>
+
+                <div class="d-grid gap-3">
+                    <a href="{% url 'familiares:iniciar_sesion' %}" class="btn boton-primario btn-lg d-flex align-items-center justify-content-between px-4 py-3 rounded-3 border-0">
+                        <span class="text-start">
+                            <span class="d-block fw-bold">Soy familiar</span>
+                            <small class="fw-normal opacity-75">Consulta novedades y recordatorios</small>
+                        </span>
+                        <i class="bi bi-arrow-right-circle fs-3" aria-hidden="true"></i>
+                        <span class="visually-hidden">Ingresar como familiar</span>
+                    </a>
+
+                    <a href="{% url 'funcionarios:iniciar_sesion' %}" class="btn btn-lg d-flex align-items-center justify-content-between px-4 py-3 rounded-3" style="border: 2px solid var(--principal-logo); color: var(--principal-logo);">
+                        <span class="text-start">
+                            <span class="d-block fw-bold">Soy funcionario</span>
+                            <small class="fw-normal opacity-75">Gestiona residentes y tareas diarias</small>
+                        </span>
+                        <i class="bi bi-arrow-right-circle fs-3" aria-hidden="true"></i>
+                        <span class="visually-hidden">Ingresar como funcionario</span>
+                    </a>
+                </div>
+
+                <p class="text-center text-secondary small mb-0 mt-4">
+                    Tu información se utiliza únicamente para apoyar la gestión y el cuidado.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

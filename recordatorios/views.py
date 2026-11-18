@@ -109,7 +109,7 @@ def eliminar_recordatorio(request, uuid):
 
 @login_required
 def eventos_calendario(request, uuid):
-    residente = get_object_or_404(Residente, uuid=uuid, funcionario=request.user)
+    residente = get_object_or_404(Residente, uuid=uuid)
 
     fechas = FechaRecordatorio.objects.filter(
         recordatorio__residente=residente

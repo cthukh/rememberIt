@@ -7,10 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 from residentes.models import Residente
 from recordatorios.models import Recordatorio, FechaRecordatorio 
-from .forms import IniciarSesionFuncionario, ActuaFuncionarioForm
+from .forms import IniciarSesionFuncionario
 from .models import Funcionario
 from administracion.forms import ActualizarFuncionarioForm
-from .forms import IniciarSesionFuncionario
 
 def base(request):
     return render(request,"base.html")
@@ -62,7 +61,7 @@ def iniciarSesion(request):
 @login_required
 def cerrarSesion(request):
     logout(request)
-    return redirect("funcionarios:iniciar_sesion")
+    return redirect("familiares:index")
 
 @login_required
 def perfil(request,uuid):

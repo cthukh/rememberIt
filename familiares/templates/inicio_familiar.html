@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio familiar{% endblock %}
+
+{% block link_logo %}{% url 'familiares:home' %}{% endblock %}
+
+{% block nav_links %}
+    <span class="nav-link text-body-secondary">Espacio familiar</span>
+    <a class="nav-link" href="{% url 'familiares:cerrar_sesion' %}">Cerrar sesión</a>
+{% endblock %}
+
+{% block content %}
+<section class="mb-4" aria-labelledby="welcome-title">
+    <p class="text-uppercase small fw-semibold mb-2" style="letter-spacing: .1em; color: var(--principal-logo);">
+        RememberIt · Espacio familiar
+    </p>
+    <h1 id="welcome-title" class="h2 fw-bold mb-2">
+        Hola, {{ request.familiar.primer_nombre }}
+    </h1>
+    <p class="text-secondary mb-0">Aquí puedes consultar la información y los recordatorios de tu familiar.</p>
+</section>
+
+{% for residente in request.familiar.residente_set.all %}
+<section class="mb-4" aria-labelledby="resident-title-{{ forloop.counter }}">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+        <div>
+            <p class="text-uppercase small fw-semibold mb-1" style="letter-spacing: .1em; color: var(--primary);">Residente</p>
+            <h2 id="resident-title-{{ forloop.counter }}" class="h3 fw-bold mb-0">
+                {{ residente.primer_nombre }}{% if residente.segundo_nombre %} {{ residente.segundo_nombre }}{% endif %}
+                {{ residente.apellido_paterno }}{% if residente.apellido_materno %} {{ residente.apellido_materno }}{% endif %}
+            </h2>
+        </div>
+        <span class="badge rounded-pill text-bg-light border px-3 py-2">{{ residente.edad }} años</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6">
+            <article class="h-100 bg-white border rounded-3 p-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-heart-pulse fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+                    <h3 class="h6 fw-bold mb-0">Alergias</h3>
+                </div>
+                <p class="mb-0 text-secondary">{{ residente.alergias|default:"No hay alergias registradas." }}</p>
+            </article>
+        </div>
+        <div class="col-12 col-md-6">
+            <article class="h-100 bg-white border rounded-3 p-4">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <i class="bi bi-telephone fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+                    <h3 class="h6 fw-bold mb-0">Contacto de emergencia</h3>
+                </div>
+                {% if residente.telefono_emergencias %}
+                    <p class="text-decoration-none fw-semibold">{{ residente.telefono_emergencias }}</p>
+                {% else %}
+                    <p class="mb-0 text-secondary">No hay un teléfono registrado.</p>
+                {% endif %}
+            </article>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <i class="bi bi-bell fs-5" style="color: var(--principal-logo);" aria-hidden="true"></i>
+        <h3 class="h5 fw-bold mb-0">Recordatorios</h3>
+    </div>
+
+    <div class="row g-3">
+        {% for recordatorio in residente.recordatorios.all %}
+        <div class="col-12 col-lg-6">
+            <article class="h-100 bg-white border rounded-3 p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <h4 class="h6 fw-bold mb-0">{{ recordatorio.nombre }}</h4>
+                    <span class="badge rounded-pill text-bg-light border">{{ recordatorio.get_frecuencia_display }}</span>
+                </div>
+                <p class="text-secondary mb-3">{{ recordatorio.descripcion }}</p>
+                {% for fecha in recordatorio.fechas.all %}
+                    <p class="small mb-1">
+                        <i class="bi {% if fecha.cumplido %}bi-check-circle-fill text-success{% else %}bi-clock text-secondary{% endif %} me-1" aria-hidden="true"></i>
+                        {{ fecha.fecha_hora|date:"d/m/Y H:i" }} · {% if fecha.cumplido %}Realizado{% else %}Pendiente{% endif %}
+                    </p>
+                {% empty %}
+                    <p class="small text-secondary mb-0">Aún no hay fechas programadas.</p>
+                {% endfor %}
+            </article>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="bg-white border rounded-3 p-4 text-secondary" role="status">
+                No hay recordatorios registrados para este residente.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% empty %}
+<section class="bg-white border rounded-3 p-4" role="status">
+    <h2 class="h5 fw-bold">Aún no hay un residente asociado</h2>
+    <p class="text-secondary mb-0">Cuando el equipo registre la asociación, aquí podrás ver sus datos y recordatorios.</p>
+</section>
+{% endfor %}
+{% endblock %}

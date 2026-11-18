@@ -1,144 +1,140 @@
-{# Panel principal funcionario #}
+<!-- Panel principal funcionario -->
 {% extends "base.html" %}
 {% load static %}
 
 {% block title %}Inicio{% endblock %}
 
 {% block extra_css %}
-    <link href="{% static 'inicio.css' %}" rel="stylesheet">
+<link href="{% static 'inicio.css' %}" rel="stylesheet">
 {% endblock %}
 
 {% block link_logo %}
-    {% url 'funcionarios:funcionario' %}
+{% url 'funcionarios:funcionario' %}
 {% endblock %}
 
 {% block nav_links %}
-    <a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">
-        Inicio
-    </a>
-    <a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
-        Residentes
-    </a>
-    {% if request.user.is_superuser == True and request.user.is_active == True %}
-        <a class="nav-link icon-link icon-link-hover" href="{% url 'administracion:inicio_admin' %}">
-            Administración
-        </a>
-    {% endif %}
-    <a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
-        Mi perfil
-    </a>
-    <a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
+<a class="nav-link disabled" href="{% url 'funcionarios:funcionario' %}">
+    Inicio
+</a>
+<a class="nav-link icon-link icon-link-hover" href="{% url 'residentes:inicio_residentes' %}">
+    Residentes
+</a>
+{% if request.user.is_superuser == True and request.user.is_active == True %}
+<a class="nav-link icon-link icon-link-hover" href="{% url 'administracion:inicio_admin' %}">
+    Administración
+</a>
+{% endif %}
+<a class="nav-link icon-link icon-link-hover" href="{% url 'funcionarios:perfil' uuid=datUsu.uuid %}">
+    Mi perfil
+</a>
+<a class="nav-link" href="{% url 'funcionarios:cerrar_sesion' %}">Cerrar sesión</a>
 {% endblock %}
 
 {% block content %}
 <!--todo Crear apartado para director -->
 {% if request.user.rol_id == 3 or request.user.rol_id == 4 or request.user.rol_id == 1 %}
-    <section class="welcome-heading" aria-labelledby="welcome-title">
-        <p class="eyebrow">Panel principal</p>
-        <h1 id="welcome-title">Hola, {{ request.user.first_name|default:request.user.rut }}</h1>
-        <p>Qué bueno tenerte aquí. Este es tu espacio de trabajo en RememberIt.</p>
-    </section>
+<section class="welcome-heading" aria-labelledby="welcome-title">
+    <p class="eyebrow">Panel principal</p>
+    <h1 id="welcome-title">Hola, {{ request.user.first_name|default:request.user.rut }}</h1>
+    <p>Qué bueno tenerte aquí. Este es tu espacio de trabajo en RememberIt.</p>
+</section>
 
-    <div class="row g-4 dashboard-grid">
-        <div class="col-12">
-            <section class="welcome-panel h-100" aria-labelledby="reminders-title">
-                <p class="section-label">Organización diaria</p>
-                <h2 id="reminders-title">Recordatorios del hogar</h2>
-                <p class="panel-copy">Tus recordatorios de hoy, organizados por residente.</p>
+<div class="row g-4 dashboard-grid">
+    <div class="col-12">
+        <section class="welcome-panel h-100" aria-labelledby="reminders-title">
+            <p class="section-label">Organización diaria</p>
+            <h2 id="reminders-title">Recordatorios del hogar</h2>
+            <p class="panel-copy">Tus recordatorios de hoy, organizados por residente.</p>
 
-                <div class="accordion reminders-accordion" id="residentesAccordion">
-                    {% for residente in residentes %}
-                        <div class="accordion-item reminders-item">
-                            <h3 class="accordion-header">
-                                <button class="accordion-button reminders-toggle {% if not forloop.first %}collapsed{% endif %}"
-                                        type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#residente-{{ forloop.counter }}"
-                                        aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
-                                        aria-controls="residente-{{ forloop.counter }}">
-                                    <i class="bi bi-person-circle me-2"></i>
-                                    <span class="flex-grow-1">{{ residente.primer_nombre }}</span>
-                                    {% if residente.pendientes %}
-                                        <span class="reminders-badge">{{ residente.pendientes }} pendiente{{ residente.pendientes|pluralize }}</span>
-                                    {% else %}
-                                        <span class="reminders-badge reminders-badge--ok"><i class="bi bi-check2"></i> Al día</span>
-                                    {% endif %}
-                                </button>
-                            </h3>
+            <div class="accordion reminders-accordion" id="residentesAccordion">
+                {% for residente in residentes %}
+                <div class="accordion-item reminders-item">
+                    <h3 class="accordion-header">
+                        <button class="accordion-button reminders-toggle {% if not forloop.first %}collapsed{% endif %}"
+                            type="button" data-bs-toggle="collapse" data-bs-target="#residente-{{ forloop.counter }}"
+                            aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}"
+                            aria-controls="residente-{{ forloop.counter }}">
+                            <i class="bi bi-person-circle me-2"></i>
+                            <span class="flex-grow-1">{{ residente.primer_nombre }}</span>
+                            {% if residente.pendientes %}
+                            <span class="reminders-badge">{{ residente.pendientes }} pendiente{{
+                                residente.pendientes|pluralize }}</span>
+                            {% else %}
+                            <span class="reminders-badge reminders-badge--ok"><i class="bi bi-check2"></i> Al día</span>
+                            {% endif %}
+                        </button>
+                    </h3>
 
-                            <div id="residente-{{ forloop.counter }}"
-                                 class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
-                                 data-bs-parent="#residentesAccordion">
-                                <div class="accordion-body reminders-body">
-                                    {% for recordatorio in residente.recordatorios.all %}
-                                        <article class="recordatorio-item reminder-card border rounded p-3 mb-3 shadow-sm bg-white">
-                                            <div class="d-flex justify-content-between align-items-center gap-2">
-                                                <h4 class="reminder-title mb-0">{{ recordatorio.nombre }}</h4>
-                                                <span class="reminder-freq">{{ recordatorio.get_frecuencia_display }}</span>
-                                            </div>
+                    <div id="residente-{{ forloop.counter }}"
+                        class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                        data-bs-parent="#residentesAccordion">
+                        <div class="accordion-body reminders-body">
+                            {% for recordatorio in residente.recordatorios.all %}
+                            <article class="recordatorio-item reminder-card border rounded p-3 mb-3 shadow-sm bg-white">
+                                <div class="d-flex justify-content-between align-items-center gap-2">
+                                    <h4 class="reminder-title mb-0">{{ recordatorio.nombre }}</h4>
+                                    <span class="reminder-freq">{{ recordatorio.get_frecuencia_display }}</span>
+                                </div>
 
-                                            <p class="reminder-desc">{{ recordatorio.descripcion }}</p>
+                                <p class="reminder-desc">{{ recordatorio.descripcion }}</p>
 
-                                            <div class="reminder-times">
-                                                {% for fecha in recordatorio.fechas.all %}
-                                                    <div class="time-slot">
-                                                        <span class="time-chip {% if fecha.cumplido %}time-chip--done{% endif %}">
-                                                            <i class="bi {% if fecha.cumplido %}bi-check-circle-fill{% else %}bi-clock{% endif %}"></i>
-                                                            {{ fecha.fecha_hora|date:"H:i" }}
-                                                        </span>
+                                <div class="reminder-times">
+                                    {% for fecha in recordatorio.fechas.all %}
+                                    <div class="time-slot">
+                                        <span class="time-chip {% if fecha.cumplido %}time-chip--done{% endif %}">
+                                            <i
+                                                class="bi {% if fecha.cumplido %}bi-check-circle-fill{% else %}bi-clock{% endif %}"></i>
+                                            {{ fecha.fecha_hora|date:"H:i" }}
+                                        </span>
 
-                                                        {% if not fecha.cumplido %}
-                                                            <button type="button"
-                                                                    class="btn btn-success btn-sm"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#modalCumplido"
-                                                                    data-url="{% url 'recordatorios:marcar_cumplido' fecha.id %}"
-                                                                    data-nombre="{{ recordatorio.nombre }}"
-                                                                    data-hora="{{ fecha.fecha_hora|date:'H:i' }}">
-                                                                <i class="bi bi-check2"></i> Realizado
-                                                            </button>
-                                                        {% endif %}
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-
-                                            {# Botones abajo #}
-                                            <div class="d-flex gap-2 mt-3 pt-3 border-top">
-                                                <a href="{% url 'recordatorios:mod_recordatorio' recordatorio.uuid %}"
-                                                class="btn btn-outline-secondary btn-sm flex-fill">
-                                                    <i class="bi bi-pencil"></i> Editar
-                                                </a>
-                                                <button type="button"
-                                                        class="btn btn-outline-danger btn-sm flex-fill"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#modalEliminar"
-                                                        data-url="{% url 'recordatorios:eliminar_recordatorio' recordatorio.uuid %}"
-                                                        data-nombre="{{ recordatorio.nombre }}">
-                                                    <i class="bi bi-trash"></i> Eliminar
-                                                </button>
-                                            </div>
-                                        </article>
-                                    {% empty %}
-                                        <div class="empty-state" role="status">
-                                            <span class="empty-state-mark" aria-hidden="true"></span>
-                                            <span>No hay recordatorios para hoy.</span>
-                                        </div>
+                                        {% if not fecha.cumplido %}
+                                        <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
+                                            data-bs-target="#modalCumplido"
+                                            data-url="{% url 'recordatorios:marcar_cumplido' fecha.id %}"
+                                            data-nombre="{{ recordatorio.nombre }}"
+                                            data-hora="{{ fecha.fecha_hora|date:'H:i' }}">
+                                            <i class="bi bi-check2"></i> Realizado
+                                        </button>
+                                        {% endif %}
+                                    </div>
                                     {% endfor %}
                                 </div>
+
+                                {# Botones abajo #}
+                                <div class="d-flex gap-2 mt-3 pt-3 border-top">
+                                    <a href="{% url 'recordatorios:mod_recordatorio' recordatorio.uuid %}"
+                                        class="btn btn-outline-secondary btn-sm flex-fill">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm flex-fill"
+                                        data-bs-toggle="modal" data-bs-target="#modalEliminar"
+                                        data-url="{% url 'recordatorios:eliminar_recordatorio' recordatorio.uuid %}"
+                                        data-nombre="{{ recordatorio.nombre }}">
+                                        <i class="bi bi-trash"></i> Eliminar
+                                    </button>
+                                </div>
+                            </article>
+                            {% empty %}
+                            <div class="empty-state" role="status">
+                                <span class="empty-state-mark" aria-hidden="true"></span>
+                                <span>No hay recordatorios para hoy.</span>
                             </div>
+                            {% endfor %}
                         </div>
-                    {% empty %}
-                        <div class="empty-state" role="status">
-                            <span class="empty-state-mark" aria-hidden="true"></span>
-                            <span>No tienes residentes asignados.</span>
-                        </div>
-                    {% endfor %}
+                    </div>
                 </div>
-                <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
-                    <i class="bi bi-people"></i> Ver residentes
-                </a>
-            </section>
-        </div>
+                {% empty %}
+                <div class="empty-state" role="status">
+                    <span class="empty-state-mark" aria-hidden="true"></span>
+                    <span>No tienes residentes asignados.</span>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{% url 'residentes:inicio_residentes' %}" class="btn boton-primario w-100 mt-4">
+                <i class="bi bi-people"></i> Ver residentes
+            </a>
+        </section>
+    </div>
 
     <div class="modal fade" id="modalCumplido" tabindex="-1" aria-labelledby="modalCumplidoTitulo" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -198,4 +194,5 @@
             document.getElementById('eliminarNombre').textContent = btn.dataset.nombre;
         });
     </script>
+{% endif %}
 {% endblock %}

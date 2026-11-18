@@ -1,0 +1,25 @@
+<!-- Cambiar a modulo de familiares -->
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'registro.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="register-page">
+    <section class="register-panel" aria-labelledby="register-title">
+        <p class="eyebrow">RememberIt · Gestión del hogar</p>
+        <h1 id="register-title">Crear cuenta de familiar</h1> </br>
+
+        <form method="post" class="register-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="btn boton-primario w-100" type="submit">Crear cuenta</button>
+        </form>
+    </section>
+</main>
+{% endblock %}
