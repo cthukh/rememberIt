@@ -17,7 +17,7 @@ class ActualizarResidenteForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["funcionario"].queryset = Funcionario.objects.filter(rol__in=["3", "4"])
+        self.fields["funcionario"].queryset = Funcionario.objects.filter(rol__nombre__in=["enf", "tec"])
 
         for name, field in self.fields.items():
             field.widget.attrs.setdefault(
